@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "478038809355",
+    "project_id": "moniito-v1",
+    "storage_bucket": "moniito-v1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:478038809355:android:2de6f7f27d69a219fc200e",
+        "android_client_info": {
+          "package_name": "com.example.moniito_v2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "478038809355-kih3quee0s4kn1ajnn7vqejjl730p5qa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.moniito_v2",
+            "certificate_hash": "0dde5b53a393bab8ace52a9cbdd84d15a52ff2dd"
+          }
+        },
+        {
+          "client_id": "478038809355-5js3j3suq38j6lkti8bgt4laa3mmlbcg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCO8-6eq4Hp4NmzA6Vo8yWicuqHUxtn0xo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "478038809355-5js3j3suq38j6lkti8bgt4laa3mmlbcg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "478038809355-dn1tccsogea4ol21jdgo0potcocseapq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.moniitoV2"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
