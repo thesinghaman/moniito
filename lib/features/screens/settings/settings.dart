@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 
-import '../../../data/repositories/authentication/authentication_repositories.dart';
+import '/data/repositories/authentication/authentication_repositories.dart';
 import '/common/widgets/container/primary_header_container.dart';
 import '/common/widgets/texts/section_heading.dart';
-
 import '/features/screens/settings/widgets/settings_app_bar.dart';
 import '/features/screens/settings/widgets/settings_menu_tile.dart';
-
 import '/utils/constants/colors.dart';
 import '/utils/constants/sizes.dart';
 import '/utils/helpers/helper_functions.dart';
 import '/utils/icons/iconsax_icons.dart';
 import '/utils/constants/text_strings.dart';
-
 import 'widgets/user_profile_tile.dart';
 
 class SettingsScreen extends StatelessWidget {

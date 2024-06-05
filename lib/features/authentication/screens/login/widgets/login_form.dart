@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:moniito_v2/features/authentication/controllers/login/login_controller.dart';
 
-import '../../../../../utils/constants/sizes.dart';
-import '../../../../../utils/constants/text_strings.dart';
-import '../../../../../utils/validators/validation.dart';
-import '../../password_configuration/forget_password.dart';
-import '../../signup/signup.dart';
+import '/features/authentication/controllers/login/login_controller.dart';
+import '/features/authentication/screens/password_configuration/forget_password.dart';
+import '/features/authentication/screens/signup/signup.dart';
+import '/utils/constants/sizes.dart';
+import '/utils/constants/text_strings.dart';
+import '/utils/validators/validation.dart';
 
 class ALoginForm extends StatelessWidget {
   const ALoginForm({
