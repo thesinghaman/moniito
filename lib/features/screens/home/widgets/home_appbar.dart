@@ -1,10 +1,11 @@
 // Import necessary packages and files
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:moniito_v2/common/widgets/shimmers/shimmer.dart';
+import 'package:moniito_v2/features/personalization/controller/user_controller.dart';
 
 // Importing custom widgets and constants
 import '/utils/constants/colors.dart';
-import '/utils/constants/text_strings.dart';
 import '/utils/helpers/helper_functions.dart';
 import '/utils/icons/iconsax_icons.dart';
 import '/common/widgets/icons/icon_button.dart';
@@ -19,6 +20,7 @@ class AHomeAppBar extends StatelessWidget {
   // Build method to create the AHomeAppBar widget
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(UserController());
     // Return a custom AAppBar widget for the home screen
     return AAppBar(
       // Set the title of the AppBar as a Column with greeting and user's first name
@@ -34,12 +36,19 @@ class AHomeAppBar extends StatelessWidget {
                 .titleSmall!
                 .apply(color: AColors.textSecondary, fontWeightDelta: 1),
           ),
-          Text(
-            // Display the user's first name
-            ATexts.userFirstName,
-            // Apply styling to the user's first name text
-            style: Theme.of(context).textTheme.headlineMedium,
-          )
+          Obx(() {
+            if (controller.profileLoading.value) {
+              // Display a shimmer loader while user profile is being loaded
+              return const AShimmerEffect(width: 80, height: 15);
+            } else {
+              return Text(
+                // Display the user's first name
+                controller.user.value.firstName,
+                // Apply styling to the user's first name text
+                style: Theme.of(context).textTheme.headlineMedium,
+              );
+            }
+          })
         ],
       ),
       // Set the actions of the AppBar, including an add icon

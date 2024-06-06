@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:moniito_v2/features/personalization/controller/user_controller.dart';
+import 'package:moniito_v2/features/personalization/profile/widgets/change_name.dart';
 
 import '/common/widgets/images/a_circular_image.dart';
 import '/common/widgets/texts/section_heading.dart';
 import '/common/widgets/appbar/appbar.dart';
-
 import '/utils/constants/sizes.dart';
 import '/utils/icons/iconsax_icons.dart';
 import '/utils/constants/image_strings.dart';
@@ -16,6 +18,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = UserController.instance;
     return Scaffold(
         appBar: AAppBar(
             title: Text(
@@ -58,11 +61,11 @@ class ProfileScreen extends StatelessWidget {
 
               AProfileMenu(
                   title: ATexts.name,
-                  value: ATexts.userFullName,
-                  onPressed: () {}),
+                  value: controller.user.value.fullName,
+                  onPressed: () => Get.to(() => const ChangeName())),
               AProfileMenu(
                   title: ATexts.username,
-                  value: ATexts.usernameValue,
+                  value: controller.user.value.username,
                   onPressed: () {}),
 
               const SizedBox(height: ASizes.spaceBtwItems / 2),
@@ -76,16 +79,16 @@ class ProfileScreen extends StatelessWidget {
 
               AProfileMenu(
                   title: ATexts.userId,
-                  value: ATexts.userIdValue,
+                  value: controller.user.value.id,
                   icon: Iconsax.copy,
                   onPressed: () {}),
               AProfileMenu(
                   title: ATexts.email,
-                  value: ATexts.emailValue,
+                  value: controller.user.value.email,
                   onPressed: () {}),
               AProfileMenu(
                   title: ATexts.phoneNo,
-                  value: ATexts.phoneNoValue,
+                  value: controller.user.value.phoneNumber,
                   onPressed: () {}),
               AProfileMenu(
                   title: ATexts.gender,
