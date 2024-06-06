@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:moniito_v2/features/authentication/controllers/forget_password/forget_password_controller.dart';
 
 import '/common/widgets/appbar/appbar.dart';
 
@@ -44,7 +45,7 @@ class ResetPasswordScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.headlineMedium,
                   textAlign: TextAlign.center),
               const SizedBox(height: ASizes.spaceBtwItems),
-              Text('mrtaimoorsikander@gmail.com',
+              Text(email,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.labelLarge),
               const SizedBox(height: ASizes.spaceBtwItems),
@@ -65,7 +66,9 @@ class ResetPasswordScreen extends StatelessWidget {
               SizedBox(
                   width: double.infinity,
                   child: TextButton(
-                      onPressed: () {}, child: const Text(ATexts.resendEmail))),
+                      onPressed: () => ForgetPasswordController.instance
+                          .resendPasswordResetEmail(email),
+                      child: const Text(ATexts.resendEmail))),
             ],
           ),
         ),

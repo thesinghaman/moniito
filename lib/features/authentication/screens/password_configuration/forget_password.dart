@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:moniito_v2/features/authentication/controllers/forget_password/forget_password_controller.dart';
+import 'package:moniito_v2/utils/validators/validation.dart';
 
 import '/common/widgets/appbar/appbar.dart';
 import '/utils/constants/sizes.dart';
@@ -12,6 +14,7 @@ class ForgetPasswordScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(ForgetPasswordController());
     return Scaffold(
       /// Custom Appbar
       appBar: AAppBar(actions: [
@@ -33,7 +36,10 @@ class ForgetPasswordScreen extends StatelessWidget {
 
             /// Text field
             Form(
+              key: controller.forgetPasswordFormKey,
               child: TextFormField(
+                controller: controller.email,
+                validator: AValidator.validateEmail,
                 decoration: const InputDecoration(
                     labelText: ATexts.email,
                     prefixIcon: Icon(Iconsax.direct_right)),
@@ -45,7 +51,8 @@ class ForgetPasswordScreen extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                  onPressed: () {}, child: const Text(ATexts.submit)),
+                  onPressed: () => controller.sendPasswordResetEmail(),
+                  child: const Text(ATexts.submit)),
             ),
           ],
         ),
