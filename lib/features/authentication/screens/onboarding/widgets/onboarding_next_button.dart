@@ -3,12 +3,10 @@ import 'package:flutter/material.dart';
 import '/utils/icons/iconsax_icons.dart';
 import '/utils/constants/sizes.dart';
 import '/utils/device/device_utility.dart';
-import '../../../controllers/onboarding/onboarding_controller.dart';
+import '/features/authentication/controllers/onboarding/onboarding_controller.dart';
 
 class AOnBoardingNextButton extends StatelessWidget {
-  const AOnBoardingNextButton({
-    super.key,
-  });
+  const AOnBoardingNextButton({super.key});
 
   @override
   Widget build(BuildContext context) {

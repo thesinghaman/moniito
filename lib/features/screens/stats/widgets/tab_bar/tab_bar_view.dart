@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '/common/widgets/charts/chart.dart';
 import '/utils/constants/sizes.dart';
-import '../../spends/spends.dart';
-import '../../categories/categories.dart';
+import '/features/screens/stats/spends/spends.dart';
+import '/features/screens/stats/categories/categories.dart';
 
 class ATabBarView extends StatelessWidget {
   const ATabBarView({

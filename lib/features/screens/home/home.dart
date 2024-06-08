@@ -1,7 +1,6 @@
 // Import necessary packages and files
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:unicons/unicons.dart';
 
 // Importing custom widgets and constants
@@ -12,9 +11,9 @@ import '/utils/constants/sizes.dart';
 import '/utils/constants/text_strings.dart';
 import '/utils/constants/colors.dart';
 import '/utils/icons/iconsax_icons.dart';
-import 'widgets/home_appbar.dart';
 import '/features/screens/transaction_info/transaction_info.dart';
 import '/home_menu.dart';
+import 'widgets/home_appbar.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

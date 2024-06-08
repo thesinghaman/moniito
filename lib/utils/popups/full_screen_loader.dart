@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
 
-import '../../common/widgets/loaders/animation_loader.dart';
-import '../constants/colors.dart';
+import '/common/widgets/loaders/animation_loader.dart';
+import '/utils/constants/colors.dart';
 
 /// A utility class for managing a full-screen loading dialog.
 class AFullScreenLoader {

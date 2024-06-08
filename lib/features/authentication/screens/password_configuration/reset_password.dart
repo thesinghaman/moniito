@@ -1,16 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:moniito_v2/features/authentication/controllers/forget_password/forget_password_controller.dart';
 
 import '/common/widgets/appbar/appbar.dart';
-
 import '/utils/constants/image_strings.dart';
 import '/utils/constants/sizes.dart';
 import '/utils/constants/text_strings.dart';
 import '/utils/helpers/helper_functions.dart';
-
-import '../login/login.dart';
+import '/features/authentication/screens/login/login.dart';
+import '/features/authentication/controllers/forget_password/forget_password_controller.dart';
 
 class ResetPasswordScreen extends StatelessWidget {
   const ResetPasswordScreen({super.key, required this.email});

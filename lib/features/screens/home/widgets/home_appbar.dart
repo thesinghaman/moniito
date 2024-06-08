@@ -1,8 +1,6 @@
 // Import necessary packages and files
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:moniito_v2/common/widgets/shimmers/shimmer.dart';
-import 'package:moniito_v2/features/personalization/controller/user_controller.dart';
 
 // Importing custom widgets and constants
 import '/utils/constants/colors.dart';
@@ -10,6 +8,8 @@ import '/utils/helpers/helper_functions.dart';
 import '/utils/icons/iconsax_icons.dart';
 import '/common/widgets/icons/icon_button.dart';
 import '/common/widgets/appbar/appbar.dart';
+import '/common/widgets/shimmers/shimmer.dart';
+import '/features/personalization/controllers/user_controller.dart';
 import '/features/screens/add_transaction/add_transaction.dart';
 
 // Custom AppBar for the home screen

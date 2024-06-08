@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '/utils/constants/colors.dart';
-import '../custom_shapes/curved_edges/curved_edges.dart';
+import '/common/widgets/custom_shapes/curved_edges/curved_edges.dart';
 
 class APrimaryHeaderContainer extends StatelessWidget {
   const APrimaryHeaderContainer(

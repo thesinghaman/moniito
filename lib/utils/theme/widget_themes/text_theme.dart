@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 // Importing custom widgets and constants
-import '../../constants/colors.dart';
+import '/utils/constants/colors.dart';
 
 class ATextTheme {
   ATextTheme._(); // To avoid creating instances

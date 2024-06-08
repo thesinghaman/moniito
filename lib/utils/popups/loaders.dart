@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
 
-import '../constants/colors.dart';
-import '../icons/iconsax_icons.dart';
+import '/utils/constants/colors.dart';
+import '/utils/icons/iconsax_icons.dart';
 
 class ALoaders {
   static hideSnackBar() =>

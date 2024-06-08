@@ -4,13 +4,10 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '/utils/constants/colors.dart';
 import '/utils/constants/sizes.dart';
 import '/utils/device/device_utility.dart';
-
-import '../../../controllers/onboarding/onboarding_controller.dart';
+import '/features/authentication/controllers/onboarding/onboarding_controller.dart';
 
 class AOnBoardingDotNavigation extends StatelessWidget {
-  const AOnBoardingDotNavigation({
-    super.key,
-  });
+  const AOnBoardingDotNavigation({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 // Importing custom widgets and constants
-import '../constants/colors.dart';
+import '/utils/constants/colors.dart';
 import 'widget_themes/appbar_theme.dart';
 import 'widget_themes/bottom_sheet_theme.dart';
 import 'widget_themes/checkbox_theme.dart';

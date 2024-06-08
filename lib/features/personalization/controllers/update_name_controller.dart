@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:moniito_v2/features/personalization/profile/profile.dart';
-import '../../../data/repositories/user/user_repository.dart';
-import '../../../utils/constants/image_strings.dart';
-import '../../../utils/helpers/network_manager.dart';
-import '../../../utils/popups/full_screen_loader.dart';
-import '../../../utils/popups/loaders.dart';
+
+import '/features/personalization/profile/profile.dart';
+import '/data/repositories/user/user_repository.dart';
+import '/utils/constants/image_strings.dart';
+import '/utils/helpers/network_manager.dart';
+import '/utils/popups/full_screen_loader.dart';
+import '/utils/popups/loaders.dart';
 import 'user_controller.dart';
 
 /// Controller to manage user-related functionality.

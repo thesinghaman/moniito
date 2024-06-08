@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:moniito_v2/features/personalization/controller/user_controller.dart';
-import 'package:moniito_v2/features/personalization/profile/widgets/change_name.dart';
 
+import '/features/personalization/controllers/user_controller.dart';
+import '/features/personalization/profile/widgets/change_name.dart';
 import '/common/widgets/images/a_circular_image.dart';
 import '/common/widgets/texts/section_heading.dart';
 import '/common/widgets/appbar/appbar.dart';
@@ -10,7 +10,6 @@ import '/utils/constants/sizes.dart';
 import '/utils/icons/iconsax_icons.dart';
 import '/utils/constants/image_strings.dart';
 import '/utils/constants/text_strings.dart';
-
 import 'widgets/profile_menu.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -106,7 +105,7 @@ class ProfileScreen extends StatelessWidget {
               // Close Account Button
               Center(
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: controller.deleteAccountWarningPopup,
                   child: const Text(
                     ATexts.closeAccount,
                     style: TextStyle(color: Colors.red),

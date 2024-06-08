@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 
 // Importing custom widgets and constants
-import '../../constants/colors.dart';
-import '../../constants/sizes.dart';
+import '/utils/constants/colors.dart';
+import '/utils/constants/sizes.dart';
 
 class AElevatedButtonTheme {
   AElevatedButtonTheme._(); // To avoid creating instances

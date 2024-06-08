@@ -3,14 +3,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '/utils/constants/colors.dart';
 import '/utils/constants/sizes.dart';
-
 import '/common/widgets/icons/category_icon.dart';
 import '/common/widgets/cards/category_card/widgets/percentage.dart';
 import '/common/widgets/container/transaction_card_container.dart';
-
-import './widgets/amount_text.dart';
-import './widgets/subtitle_text.dart';
-import './widgets/title_text.dart';
+import '/common/widgets/cards/category_card/widgets/amount_text.dart';
+import '/common/widgets/cards/category_card/widgets/subtitle_text.dart';
+import '/common/widgets/cards/category_card/widgets/title_text.dart';
 
 class ACategoryCard extends StatelessWidget {
   const ACategoryCard(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:firebase_storage/firebase_storage.dart';
 
 /// Helper functions for cloud-related operations.

@@ -4,11 +4,9 @@ import 'package:unicons/unicons.dart';
 import '/common/widgets/appbar/appbar.dart';
 import '/common/widgets/container/primary_header_container.dart';
 import '/common/widgets/buttons/outlined_button.dart';
-
 import '/utils/constants/colors.dart';
 import '/utils/constants/sizes.dart';
 import '/utils/constants/text_strings.dart';
-
 import 'widgets/transaction_logo.dart';
 import 'widgets/transaction_menu.dart';
 import 'widgets/transaction_type_text.dart';

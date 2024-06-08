@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '/data/repositories/user/user_repository.dart';
 import '/features/authentication/screens/onboarding/onboarding.dart';
 import '/features/authentication/screens/login/login.dart';
 import '/features/authentication/screens/signup/verify_email.dart';
@@ -127,6 +128,29 @@ class AuthenticationRepository extends GetxController {
     }
   }
 
+  /// [ReAuthenticate] - ReAuthenticate User
+  Future<void> reAuthenticateWithEmailAndPassword(
+      String email, String password) async {
+    try {
+      // Create a credential
+      AuthCredential credential =
+          EmailAuthProvider.credential(email: email, password: password);
+
+      // ReAuthenticate
+      await _auth.currentUser!.reauthenticateWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      throw AFirebaseAuthException(e.code).message;
+    } on FirebaseException catch (e) {
+      throw AFirebaseException(e.code).message;
+    } on FormatException catch (_) {
+      throw const AFormatException();
+    } on PlatformException catch (e) {
+      throw APlatformException(e.code).message;
+    } catch (e) {
+      throw 'Something went wrong. Please try again';
+    }
+  }
+
   /// [LogoutUser] - Valid for any authentication
   Future<void> logout() async {
     try {
@@ -172,6 +196,24 @@ class AuthenticationRepository extends GetxController {
       throw APlatformException(e.code).message;
     } catch (e) {
       throw ATexts.wentWrong;
+    }
+  }
+
+  /// DELETE USER - Remove user Auth and Firestore Account.
+  Future<void> deleteAccount() async {
+    try {
+      await UserRepository.instance.removeUserRecord(_auth.currentUser!.uid);
+      await _auth.currentUser?.delete();
+    } on FirebaseAuthException catch (e) {
+      throw AFirebaseAuthException(e.code).message;
+    } on FirebaseException catch (e) {
+      throw AFirebaseException(e.code).message;
+    } on FormatException catch (_) {
+      throw const AFormatException();
+    } on PlatformException catch (e) {
+      throw APlatformException(e.code).message;
+    } catch (e) {
+      throw 'Something went wrong. Please try again';
     }
   }
 }

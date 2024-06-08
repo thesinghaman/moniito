@@ -1,19 +1,15 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
 
 import '/utils/constants/colors.dart';
 import '/utils/constants/sizes.dart';
 import '/utils/constants/text_strings.dart';
 import '/utils/device/device_utility.dart';
-
 import '/features/authentication/controllers/signup/signup_controller.dart';
 
 class ATermsAndConditionCheckbox extends StatelessWidget {
-  const ATermsAndConditionCheckbox({
-    super.key,
-  });
+  const ATermsAndConditionCheckbox({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '/data/repositories/authentication/authentication_repositories.dart';
 import '/common/widgets/container/primary_header_container.dart';
 import '/common/widgets/texts/section_heading.dart';
 import '/features/screens/settings/widgets/settings_app_bar.dart';
 import '/features/screens/settings/widgets/settings_menu_tile.dart';
+import '/features/personalization/profile/profile.dart';
 import '/utils/constants/colors.dart';
 import '/utils/constants/sizes.dart';
 import '/utils/helpers/helper_functions.dart';
@@ -24,14 +26,15 @@ class SettingsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // -- Header
-            const APrimaryHeaderContainer(
+            APrimaryHeaderContainer(
               child: Column(
                 children: [
                   // AppBar
-                  ASettingsAppBar(),
+                  const ASettingsAppBar(),
 
                   // User Profile Card
-                  AUserProfileTile(),
+                  AUserProfileTile(
+                      onPressed: () => Get.to(() => const ProfileScreen())),
                 ],
               ),
             ),

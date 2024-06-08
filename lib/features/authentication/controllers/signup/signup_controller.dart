@@ -3,10 +3,8 @@ import 'package:get/get.dart';
 
 import '/data/repositories/authentication/authentication_repositories.dart';
 import '/data/repositories/user/user_repository.dart';
-
 import '/features/authentication/screens/signup/verify_email.dart';
 import '/features/personalization/models/user_model.dart';
-
 import '/utils/constants/image_strings.dart';
 import '/utils/helpers/network_manager.dart';
 import '/utils/popups/full_screen_loader.dart';

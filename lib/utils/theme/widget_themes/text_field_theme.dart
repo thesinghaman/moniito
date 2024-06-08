@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../constants/colors.dart';
-import '../../constants/sizes.dart';
+
+import '/utils/constants/colors.dart';
+import '/utils/constants/sizes.dart';
 
 class ATextFormFieldTheme {
   ATextFormFieldTheme._();

@@ -5,15 +5,11 @@ import '/utils/constants/sizes.dart';
 import '/utils/constants/text_strings.dart';
 import '/utils/icons/iconsax_icons.dart';
 import '/utils/validators/validation.dart';
-
 import '/features/authentication/controllers/signup/signup_controller.dart';
-
 import 'terms_conditions_checkbox.dart';
 
 class ASignupForm extends StatelessWidget {
-  const ASignupForm({
-    super.key,
-  });
+  const ASignupForm({super.key});
 
   @override
   Widget build(BuildContext context) {

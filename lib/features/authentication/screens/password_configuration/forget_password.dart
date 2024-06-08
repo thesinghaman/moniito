@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:moniito_v2/features/authentication/controllers/forget_password/forget_password_controller.dart';
-import 'package:moniito_v2/utils/validators/validation.dart';
 
+import '/features/authentication/controllers/forget_password/forget_password_controller.dart';
 import '/common/widgets/appbar/appbar.dart';
+import '/utils/validators/validation.dart';
 import '/utils/constants/sizes.dart';
 import '/utils/constants/text_strings.dart';
 import '/utils/icons/iconsax_icons.dart';
