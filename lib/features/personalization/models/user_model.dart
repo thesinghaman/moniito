@@ -41,8 +41,8 @@ class UserModel {
 
     String camelCaseUsername =
         "$firstName$lastName"; // Combine first and last name
-    String usernameWithPrefix = camelCaseUsername;
-    return usernameWithPrefix;
+
+    return camelCaseUsername;
   }
 
   /// Static function to create an empty user model.
