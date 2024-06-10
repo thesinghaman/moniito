@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+
 import 'package:get/get.dart';
 
 import '/features/personalization/controllers/user_controller.dart';
 import '/features/personalization/profile/widgets/change_name.dart';
 import '/common/widgets/images/a_circular_image.dart';
 import '/common/widgets/texts/section_heading.dart';
+import '/common/widgets/shimmers/shimmer.dart';
 import '/common/widgets/appbar/appbar.dart';
 import '/utils/constants/sizes.dart';
 import '/utils/icons/iconsax_icons.dart';
@@ -39,10 +41,23 @@ class ProfileScreen extends StatelessWidget {
                 width: double.infinity,
                 child: Column(
                   children: [
-                    const ACircularImage(
-                        image: AImages.profileImage, width: 80, height: 80),
+                    Obx(() {
+                      final networkImage = controller.user.value.profilePicture;
+                      final image = networkImage.isNotEmpty
+                          ? networkImage
+                          : AImages.profileImage;
+                      return controller.imageUploading.value
+                          ? const AShimmerEffect(
+                              width: 80, height: 80, radius: 80)
+                          : ACircularImage(
+                              image: image,
+                              width: 80,
+                              height: 80,
+                              isNetworkImage: networkImage.isNotEmpty,
+                            );
+                    }),
                     TextButton(
-                        onPressed: () {},
+                        onPressed: () => controller.uploadUserProfilePicture(),
                         child: const Text(ATexts.changeProfileImage)),
                   ],
                 ),

@@ -1,6 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '/common/widgets/loaders/circular_loader.dart';
 import '/data/repositories/authentication/authentication_repositories.dart';
@@ -24,6 +26,7 @@ class UserController extends GetxController {
 
   final userRepository = Get.put(UserRepository());
   final hidePassword = false.obs;
+  final imageUploading = false.obs;
   final verifyEmail = TextEditingController();
   final verifyPassword = TextEditingController();
   GlobalKey<FormState> reAuthFormKey = GlobalKey<FormState>();
@@ -51,25 +54,32 @@ class UserController extends GetxController {
   /// Save user Record from any Registration Provider
   Future<void> saveUserRecord(UserCredential? userCredentials) async {
     try {
-      if (userCredentials != null) {
-        // Convert Name to First and Last Name
-        final nameParts =
-            UserModel.nameParts(userCredentials.user!.displayName ?? ' ');
-        final username = UserModel.generateUsername(
-            userCredentials.user!.displayName ?? ' ');
+      // First update Rx User and then check if user data is already stored. If not store new data.
+      await fetchUserRecord();
 
-        // Map Data
-        final user = UserModel(
-            id: userCredentials.user!.uid,
-            firstName: nameParts[0],
-            lastName:
-                nameParts.length > 1 ? nameParts.sublist(1).join(' ') : ' ',
-            username: username,
-            email: userCredentials.user!.email ?? ' ',
-            phoneNumber: userCredentials.user!.phoneNumber ?? ' ',
-            profilePicture: userCredentials.user!.photoURL ?? '');
+      // If no user record already stored
+      if (user.value.id.isEmpty) {
+        if (userCredentials != null) {
+          // Convert Name to First and Last Name
+          final nameParts =
+              UserModel.nameParts(userCredentials.user!.displayName ?? ' ');
+          final username = UserModel.generateUsername(
+              userCredentials.user!.displayName ?? ' ');
 
-        await userRepository.saveUserRecord(user);
+          // Map Data
+          final user = UserModel(
+              id: userCredentials.user!.uid,
+              firstName: nameParts[0],
+              lastName:
+                  nameParts.length > 1 ? nameParts.sublist(1).join(' ') : ' ',
+              username: username,
+              email: userCredentials.user!.email ?? ' ',
+              phoneNumber: userCredentials.user!.phoneNumber ?? ' ',
+              profilePicture: userCredentials.user!.photoURL ?? '');
+
+          // Save User Data
+          await userRepository.saveUserRecord(user);
+        }
       }
     } catch (e) {
       ALoaders.warningSnackBar(
@@ -186,6 +196,40 @@ class UserController extends GetxController {
       );
     } catch (e) {
       ALoaders.errorSnackBar(title: 'Oh Snap', message: e.toString());
+    }
+  }
+
+  uploadUserProfilePicture() async {
+    try {
+      final image = await ImagePicker().pickImage(
+          source: ImageSource.gallery,
+          imageQuality: 100,
+          maxHeight: 512,
+          maxWidth: 512);
+
+      if (image != null) {
+        imageUploading.value = true;
+        // Upload Image
+        final imageUrl =
+            await userRepository.uploadImage('Users/Images/Profile/', image);
+
+        // Update User Image Record
+        Map<String, dynamic> json = {'ProfilePicture': imageUrl};
+        await userRepository.updateSingleField(json);
+
+        user.value.profilePicture = imageUrl;
+        // Re-Draw the widgets where user is used.
+        user.refresh();
+
+        ALoaders.successSnackBar(
+            title: 'Congratulations',
+            message: 'Your Profile Image has been updated!');
+      }
+    } catch (e) {
+      ALoaders.errorSnackBar(
+          title: 'Oh Sanp', message: 'Something went wrong : $e');
+    } finally {
+      imageUploading.value = false;
     }
   }
 }

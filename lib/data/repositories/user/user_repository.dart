@@ -1,13 +1,16 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
-import 'package:moniito_v2/data/repositories/authentication/authentication_repositories.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+
+import '/data/repositories/authentication/authentication_repositories.dart';
 import '/utils/exceptions/firebase_auth_exceptions.dart';
 import '/utils/exceptions/format_exceptions.dart';
 import '/utils/exceptions/platform_exceptions.dart';
 import '/utils/constants/text_strings.dart';
-
 import '/features/personalization/models/user_model.dart';
 
 /// Repository class for user-related operations
@@ -94,6 +97,24 @@ class UserRepository extends GetxController {
   Future<void> removeUserRecord(String userID) async {
     try {
       await _db.collection("Users").doc(userID).delete();
+    } on FirebaseException catch (e) {
+      throw AFirebaseAuthException(e.code).message;
+    } on FormatException catch (_) {
+      throw const AFormatException();
+    } on PlatformException catch (e) {
+      throw APlatformException(e.code).message;
+    } catch (e) {
+      throw ATexts.wentWrong;
+    }
+  }
+
+  /// Upload any Image
+  Future<String> uploadImage(String path, XFile image) async {
+    try {
+      final ref = FirebaseStorage.instance.ref(path).child(image.name);
+      await ref.putFile(File(image.path));
+      final url = await ref.getDownloadURL();
+      return url;
     } on FirebaseException catch (e) {
       throw AFirebaseAuthException(e.code).message;
     } on FormatException catch (_) {

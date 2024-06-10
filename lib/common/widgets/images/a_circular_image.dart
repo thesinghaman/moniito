@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
+import 'package:cached_network_image/cached_network_image.dart';
+
 import '/utils/constants/colors.dart';
 import '/utils/constants/sizes.dart';
+import '/utils/helpers/helper_functions.dart';
+import '/common/widgets/shimmers/shimmer.dart';
 
 class ACircularImage extends StatelessWidget {
   const ACircularImage({
@@ -30,17 +34,26 @@ class ACircularImage extends StatelessWidget {
       height: height,
       padding: EdgeInsets.all(padding),
       decoration: BoxDecoration(
-        color: AColors.white,
+        // If image background color is null then switch it to light and dark mode color design.
+        color: backgroundColor ??
+            (AHelperFunctions.isDarkMode(context)
+                ? AColors.black
+                : AColors.white),
         borderRadius: BorderRadius.circular(100),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(100),
         child: Center(
-          child: Image(
-            fit: fit,
-            image: AssetImage(image),
-            color: overlayColor,
-          ),
+          child: isNetworkImage
+              ? CachedNetworkImage(
+                  fit: fit,
+                  color: overlayColor,
+                  imageUrl: image,
+                  progressIndicatorBuilder: (context, url, downloadProgress) =>
+                      const AShimmerEffect(width: 55, height: 55),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                )
+              : Image(fit: fit, image: AssetImage(image), color: overlayColor),
         ),
       ),
     );

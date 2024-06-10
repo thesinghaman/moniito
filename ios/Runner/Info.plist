@@ -46,6 +46,13 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 
+	<!-- Gallery and Camera Permission -->
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>Access to your gallery is required to update your profile image. Please grant permission to proceed.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>To capture a new picture, please grant access to your camera.</string>
+    <!-- END Gallery and Camera Permission -->
+
 	<!-- Google Sign-in Section -->
         <key>CFBundleURLTypes</key>
         <array>
