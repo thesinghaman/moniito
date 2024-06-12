@@ -10,7 +10,7 @@ import '/common/widgets/icons/icon_button.dart';
 import '/common/widgets/appbar/appbar.dart';
 import '/common/widgets/shimmers/shimmer.dart';
 import '/features/personalization/controllers/user_controller.dart';
-import '/features/screens/add_transaction/add_transaction.dart';
+import '/features/transactions/add_transaction/add_transaction.dart';
 
 // Custom AppBar for the home screen
 class AHomeAppBar extends StatelessWidget {

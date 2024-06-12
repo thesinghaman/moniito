@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:moniito_v2/features/transactions/controller/transaction_controller.dart';
+import 'package:moniito_v2/features/transactions/models/transaction_model.dart';
 
 import '/common/widgets/container/primary_header_container.dart';
 import '/utils/constants/colors.dart';
@@ -17,6 +20,7 @@ class AddTransactionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(TransactionController());
     return Scaffold(
       backgroundColor: AColors.light,
       body: SingleChildScrollView(
@@ -24,16 +28,16 @@ class AddTransactionScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // -- Primary Header
-            const APrimaryHeaderContainer(
+            APrimaryHeaderContainer(
               height: 270,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // App Bar
-                  AAddTransactionAppBar(),
+                  const AAddTransactionAppBar(),
 
                   // Add Amount Text Field
-                  AAddAmountTextField(),
+                  AAddAmountTextField(amount: controller.amount),
                 ],
               ),
             ),
@@ -51,19 +55,25 @@ class AddTransactionScreen extends StatelessWidget {
             const SizedBox(height: ASizes.spaceBtwSections),
 
             // Transaction Name Field
-            const ATextField(
-                icon: Iconsax.document_text_1,
-                hintText: ATexts.transactionTitle),
+            ATextField(
+              icon: Iconsax.document_text_1,
+              hintText: ATexts.transactionTitle,
+              textFieldController: controller.transactionTitle,
+            ),
             const SizedBox(height: ASizes.spaceBtwItems),
 
             // Category Field
             ACategoryField(
-              onTap: () {},
+              categoryController: controller.category,
             ),
             const SizedBox(height: ASizes.spaceBtwItems),
 
             // Description Field
-            const ATextField(icon: Iconsax.note_2, hintText: ATexts.notes),
+            ATextField(
+              icon: Iconsax.note_2,
+              hintText: ATexts.notes,
+              textFieldController: controller.description,
+            ),
             const SizedBox(height: ASizes.spaceBtwItems),
 
             Padding(
@@ -72,14 +82,17 @@ class AddTransactionScreen extends StatelessWidget {
               child: Column(
                 children: [
                   // Add Invoice Button
-                  AAddInvoiceButton(title: ATexts.addInvoice, onPressed: () {}),
-                  const SizedBox(height: ASizes.spaceBtwSections * 3),
+                  AAddInvoiceButton(
+                    title: ATexts.addInvoice,
+                  ),
 
                   // Save Button
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
-                        onPressed: () {}, child: const Text(ATexts.save)),
+                    child: SafeArea(
+                      child: ElevatedButton(
+                          onPressed: () => t(), child: const Text(ATexts.save)),
+                    ),
                   )
                 ],
               ),
@@ -88,5 +101,18 @@ class AddTransactionScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void t() {
+    TransactionModel transaction = TransactionModel(
+      id: '1',
+      amount: '100',
+      transactionTitle: 'Example Transaction',
+      isExpense: true,
+      category: 'Example Category',
+      date: '2024-06-10',
+    );
+    final controller = TransactionController.instance;
+    controller.saveUserTransactions(transaction);
   }
 }

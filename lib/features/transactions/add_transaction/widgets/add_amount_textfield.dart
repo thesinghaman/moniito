@@ -5,9 +5,9 @@ import '/utils/constants/sizes.dart';
 import '/utils/constants/text_strings.dart';
 
 class AAddAmountTextField extends StatelessWidget {
-  const AAddAmountTextField({
-    super.key,
-  });
+  const AAddAmountTextField({super.key, required this.amount});
+
+  final TextEditingController amount;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +37,7 @@ class AAddAmountTextField extends StatelessWidget {
               // TextField
               Expanded(
                 child: TextField(
+                  controller: amount,
                   maxLength: 15,
                   maxLines: 1,
                   style: Theme.of(context)

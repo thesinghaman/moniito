@@ -8,10 +8,12 @@ class ATextField extends StatelessWidget {
     super.key,
     required this.icon,
     required this.hintText,
+    required this.textFieldController,
   });
 
   final IconData icon;
   final String hintText;
+  final TextEditingController textFieldController;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +31,7 @@ class ATextField extends StatelessWidget {
           const SizedBox(width: ASizes.md),
           Expanded(
             child: TextField(
+              controller: textFieldController,
               maxLines: 1,
               style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                   color: AColors.darkerGrey, fontWeight: FontWeight.w500),
