@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:moniito_v2/features/transactions/controller/transaction_controller.dart';
-import 'package:moniito_v2/features/transactions/models/transaction_model.dart';
+import 'package:moniito_v2/features/app/controllers/transaction_controller.dart';
+import 'package:moniito_v2/features/app/models/transaction_model.dart';
 
 import '/common/widgets/container/primary_header_container.dart';
 import '/utils/constants/colors.dart';
@@ -43,13 +43,17 @@ class AddTransactionScreen extends StatelessWidget {
             ),
 
             // Transaction Type CheckBox
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ATransTypeCheckbox(
-                    color: Colors.red, value: true, title: ATexts.expense),
+                    color: Colors.red,
+                    //value: controller.isExpense.value,
+                    title: ATexts.expense),
                 ATransTypeCheckbox(
-                    color: Colors.green, value: false, title: ATexts.income),
+                    color: Colors.green,
+                    //value: controller.isIncome.value,
+                    title: ATexts.income),
               ],
             ),
             const SizedBox(height: ASizes.spaceBtwSections),
@@ -63,9 +67,7 @@ class AddTransactionScreen extends StatelessWidget {
             const SizedBox(height: ASizes.spaceBtwItems),
 
             // Category Field
-            ACategoryField(
-              categoryController: controller.category,
-            ),
+            ACategoryField(),
             const SizedBox(height: ASizes.spaceBtwItems),
 
             // Description Field

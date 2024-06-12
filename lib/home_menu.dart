@@ -8,10 +8,10 @@ import 'utils/constants/colors.dart';
 import 'utils/icons/iconsax_icons.dart';
 
 // Importing all screens.
-import 'features/screens/home/home.dart';
-import 'features/screens/stats/stats.dart';
-import 'features/screens/settings/settings.dart';
-import 'features/transactions/add_transaction/add_transaction.dart';
+import 'features/app/screens/home/home.dart';
+import 'features/app/screens/stats/stats.dart';
+import 'features/app/screens/settings/settings.dart';
+import 'features/app/screens/transaction_add/add_transaction.dart';
 
 // Main class representing the Home Menu screen
 class HomeMenu extends StatelessWidget {

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:moniito_v2/features/personalization/models/user_model.dart';
-import 'package:moniito_v2/features/transactions/models/transaction_model.dart';
+import 'package:moniito_v2/features/app/models/transaction_model.dart';
 import 'package:moniito_v2/utils/popups/loaders.dart';
 
 class TransactionRepository {

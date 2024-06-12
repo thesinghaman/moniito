@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:get/get.dart';
-import 'package:moniito_v2/features/transactions/controller/transaction_controller.dart';
+import 'package:moniito_v2/features/app/controllers/transaction_controller.dart';
 
 import '/utils/constants/colors.dart';
 import '/utils/constants/sizes.dart';
