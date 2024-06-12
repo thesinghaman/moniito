@@ -19,46 +19,6 @@ class AAddInvoiceButton extends StatelessWidget {
     required this.title,
   }) : super(key: key);
 
-  Future<void> _pickImage(ImageSource source) async {
-    final pickedFile = await ImagePicker().pickImage(source: source);
-    if (pickedFile != null) {
-      final croppedFile = await ImageCropper().cropImage(
-        sourcePath: pickedFile.path,
-        uiSettings: [
-          AndroidUiSettings(
-            toolbarTitle: 'Crop Image',
-            toolbarColor: Colors.deepOrange,
-            toolbarWidgetColor: Colors.white,
-            initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: false,
-            aspectRatioPresets: [
-              CropAspectRatioPreset.square,
-              CropAspectRatioPreset.ratio3x2,
-              CropAspectRatioPreset.original,
-              CropAspectRatioPreset.ratio4x3,
-              CropAspectRatioPreset.ratio16x9
-            ],
-          ),
-          IOSUiSettings(
-            title: 'Cropper',
-            minimumAspectRatio: 1.0,
-            aspectRatioPresets: [
-              CropAspectRatioPreset.square,
-              CropAspectRatioPreset.ratio3x2,
-              CropAspectRatioPreset.original,
-              CropAspectRatioPreset.ratio4x3,
-              CropAspectRatioPreset.ratio16x9
-            ],
-          ),
-        ],
-      );
-
-      if (croppedFile != null) {
-        controller.setImage(croppedFile.path);
-      }
-    }
-  }
-
   void _showPicker(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -70,7 +30,7 @@ class AAddInvoiceButton extends StatelessWidget {
                 leading: Icon(Iconsax.gallery),
                 title: Text('Photo Library'),
                 onTap: () {
-                  _pickImage(ImageSource.gallery);
+                  controller.pickImage(ImageSource.gallery);
                   Navigator.of(context).pop();
                 },
               ),
@@ -78,7 +38,7 @@ class AAddInvoiceButton extends StatelessWidget {
                 leading: Icon(Iconsax.camera),
                 title: Text('Camera'),
                 onTap: () {
-                  _pickImage(ImageSource.camera);
+                  controller.pickImage(ImageSource.camera);
                   Navigator.of(context).pop();
                 },
               ),
@@ -94,7 +54,7 @@ class AAddInvoiceButton extends StatelessWidget {
     return Obx(() {
       return Column(
         children: [
-          if (controller.image.value.isEmpty)
+          if (controller.image.value.path.isEmpty)
             OutlinedButton(
               onPressed: () => _showPicker(context),
               child: Row(
@@ -126,7 +86,7 @@ class AAddInvoiceButton extends StatelessWidget {
                   child: Stack(
                     children: [
                       Image.file(
-                        File(controller.image.value),
+                        File(controller.image.value.path),
                         height: 150,
                         width: 150,
                         fit: BoxFit.cover,

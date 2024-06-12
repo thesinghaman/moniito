@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:moniito_v2/data/repositories/transaction/transaction_repository.dart';
 import 'package:moniito_v2/data/repositories/user/user_repository.dart';
 import 'package:moniito_v2/features/app/models/transaction_model.dart';
+import 'package:moniito_v2/utils/popups/loaders.dart';
 
 class TransactionController extends GetxController {
   static TransactionController get instance => Get.find();
@@ -20,7 +23,7 @@ class TransactionController extends GetxController {
       <MapEntry<Category, String>>[].obs;
 
   Rx<String> category = ''.obs;
-  Rx<String> image = ''.obs;
+  Rx<XFile> image = XFile('').obs;
   Rx<bool> isExpense = true.obs;
   Rx<bool> isIncome = false.obs;
 
@@ -39,6 +42,15 @@ class TransactionController extends GetxController {
     print(category.value);
     print(description.text.toString());
     print(image.value);
+
+    TransactionModel transaction = TransactionModel(
+        amount: amount.text.toString(),
+        transactionTitle: transactionTitle.text.toString(),
+        isExpense: isExpense.value,
+        category: category.value,
+        description: description.value.toString(),
+        date: '12-06-2024');
+
     final user = await userRepository.fetchUserDetails();
 
     final transactionId =
@@ -47,14 +59,19 @@ class TransactionController extends GetxController {
     if (transactionId != '') {
       transaction.id = transactionId;
     }
+
+    String imageUrl = await uploadReceiptImage();
+    if (imageUrl != '') {
+      transaction.receiptImage = imageUrl;
+    }
   }
 
-  void setImage(String path) {
-    image.value = path;
+  void setImage(XFile imageFile) {
+    image.value = imageFile;
   }
 
   void clearImage() {
-    image.value = '';
+    image.value = XFile('');
   }
 
   void filterCategories(String text) {
@@ -69,5 +86,66 @@ class TransactionController extends GetxController {
         const MapEntry(Category.miscellaneous, 'Miscellaneous')
       ];
     }
+  }
+
+  Future<void> pickImage(ImageSource source) async {
+    final pickedFile = await ImagePicker().pickImage(source: source);
+    if (pickedFile != null) {
+      final croppedFile = await ImageCropper().cropImage(
+        sourcePath: pickedFile.path,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Crop Image',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false,
+            aspectRatioPresets: [
+              CropAspectRatioPreset.square,
+              CropAspectRatioPreset.ratio3x2,
+              CropAspectRatioPreset.original,
+              CropAspectRatioPreset.ratio4x3,
+              CropAspectRatioPreset.ratio16x9
+            ],
+          ),
+          IOSUiSettings(
+            title: 'Cropper',
+            minimumAspectRatio: 1.0,
+            aspectRatioPresets: [
+              CropAspectRatioPreset.square,
+              CropAspectRatioPreset.ratio3x2,
+              CropAspectRatioPreset.original,
+              CropAspectRatioPreset.ratio4x3,
+              CropAspectRatioPreset.ratio16x9
+            ],
+          ),
+        ],
+      );
+
+      if (croppedFile != null) {
+        final croppedFilePath = croppedFile.path;
+        final xFile = XFile(croppedFilePath);
+        setImage(xFile);
+      }
+    }
+  }
+
+  Future<String> uploadReceiptImage() async {
+    try {
+      print(image);
+      if (image != null) {
+        // Upload Image
+        final imageUrl = await transactionRepository.uploadImage(
+            'Users/Images/ReceiptImages/', image.value);
+
+        print(imageUrl);
+
+        return imageUrl;
+      }
+    } catch (e) {
+      ALoaders.errorSnackBar(
+          title: 'Oh Snap', message: 'Something went wrong : $e');
+    }
+    return '';
   }
 }

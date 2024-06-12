@@ -1,6 +1,15 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:moniito_v2/features/personalization/models/user_model.dart';
 import 'package:moniito_v2/features/app/models/transaction_model.dart';
+import 'package:moniito_v2/utils/constants/text_strings.dart';
+import 'package:moniito_v2/utils/exceptions/firebase_auth_exceptions.dart';
+import 'package:moniito_v2/utils/exceptions/format_exceptions.dart';
+import 'package:moniito_v2/utils/exceptions/platform_exceptions.dart';
 import 'package:moniito_v2/utils/popups/loaders.dart';
 
 class TransactionRepository {
@@ -49,6 +58,24 @@ class TransactionRepository {
       // Handle error
       print('Error fetching transactions: $e');
       return const Stream.empty();
+    }
+  }
+
+  /// Upload any Image
+  Future<String> uploadImage(String path, XFile image) async {
+    try {
+      final ref = FirebaseStorage.instance.ref(path).child(image.name);
+      await ref.putFile(File(image.path));
+      final url = await ref.getDownloadURL();
+      return url;
+    } on FirebaseException catch (e) {
+      throw AFirebaseAuthException(e.code).message;
+    } on FormatException catch (_) {
+      throw const AFormatException();
+    } on PlatformException catch (e) {
+      throw APlatformException(e.code).message;
+    } catch (e) {
+      throw ATexts.wentWrong;
     }
   }
 }

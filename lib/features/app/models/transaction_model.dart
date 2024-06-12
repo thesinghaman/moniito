@@ -82,7 +82,7 @@ class TransactionModel {
   final bool isExpense;
   final String category;
   final String description;
-  final String receiptImage;
+  String receiptImage;
   final String date;
 
   TransactionModel(
