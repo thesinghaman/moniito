@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:moniito_v2/utils/constants/enums.dart';
 
-import '../../../controllers/transaction_controller.dart';
-import 'trans_category.dart';
-import '../../../models/transaction_model.dart';
+import '../../../../features/app/controllers/transaction_controller.dart';
+import '../../../../features/app/screens/transaction_add/widgets/trans_category.dart';
 import '/utils/constants/colors.dart';
 import '/utils/constants/sizes.dart';
 import '/utils/constants/text_strings.dart';
@@ -28,7 +28,7 @@ class ACategoryField extends StatelessWidget {
       child: ListTile(
         onTap: () async {
           Category? selectedCategory =
-              await Get.to(() => const TransactionsCategory());
+              await Get.to(() => const ATransactionsCategory());
           if (selectedCategory == null) {
             return;
           }

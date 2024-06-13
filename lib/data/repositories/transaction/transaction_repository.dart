@@ -1,16 +1,18 @@
 import 'dart:io';
+import 'package:flutter/services.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:moniito_v2/features/personalization/models/user_model.dart';
-import 'package:moniito_v2/features/app/models/transaction_model.dart';
-import 'package:moniito_v2/utils/constants/text_strings.dart';
-import 'package:moniito_v2/utils/exceptions/firebase_auth_exceptions.dart';
-import 'package:moniito_v2/utils/exceptions/format_exceptions.dart';
-import 'package:moniito_v2/utils/exceptions/platform_exceptions.dart';
-import 'package:moniito_v2/utils/popups/loaders.dart';
+
+import '/data/repositories/authentication/authentication_repositories.dart';
+import '/features/personalization/models/user_model.dart';
+import '/features/app/models/transaction_model.dart';
+import '/utils/constants/text_strings.dart';
+import '/utils/exceptions/firebase_auth_exceptions.dart';
+import '/utils/exceptions/format_exceptions.dart';
+import '/utils/exceptions/platform_exceptions.dart';
+import '/utils/popups/loaders.dart';
 
 class TransactionRepository {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -23,7 +25,7 @@ class TransactionRepository {
       DocumentReference newTransactionRef = await _db
           .collection('Users')
           .doc(user.id)
-          .collection('Transaction')
+          .collection('Transactions')
           .add(transaction.toJson());
 
       // Update the transaction data with the generated ID
@@ -40,34 +42,16 @@ class TransactionRepository {
     }
   }
 
-  // Function to fetch list of transactions from Firestore
-  Stream<List<TransactionModel>> getTransactions(String userId) {
+  /// Update any field in specific Transactions collection
+  Future<void> updateSingleField(
+      Map<String, dynamic> json, String transactionId) async {
     try {
-      // Reference to the user's document
-      DocumentReference userRef = _db.collection('user').doc(userId);
-
-      // Reference to the "Transaction" subcollection
-      CollectionReference transactionRef = userRef.collection('Transaction');
-
-      // Fetch and listen to changes in the "Transaction" subcollection
-      return transactionRef.snapshots().map((snapshot) => snapshot.docs
-          .map((doc) => TransactionModel.fromSnapshot(
-              doc as DocumentSnapshot<Map<String, dynamic>>))
-          .toList());
-    } catch (e) {
-      // Handle error
-      print('Error fetching transactions: $e');
-      return const Stream.empty();
-    }
-  }
-
-  /// Upload any Image
-  Future<String> uploadImage(String path, XFile image) async {
-    try {
-      final ref = FirebaseStorage.instance.ref(path).child(image.name);
-      await ref.putFile(File(image.path));
-      final url = await ref.getDownloadURL();
-      return url;
+      await _db
+          .collection("Users")
+          .doc(AuthenticationRepository.instance.authUser?.uid)
+          .collection("Transactions")
+          .doc(transactionId)
+          .update(json);
     } on FirebaseException catch (e) {
       throw AFirebaseAuthException(e.code).message;
     } on FormatException catch (_) {
@@ -76,6 +60,45 @@ class TransactionRepository {
       throw APlatformException(e.code).message;
     } catch (e) {
       throw ATexts.wentWrong;
+    }
+  }
+
+  /// Upload Receipt Image
+  Future<String> uploadReceiptImage(String path, XFile image) async {
+    try {
+      final ref = FirebaseStorage.instance.ref(path).child(image.name);
+      await ref.putFile(File(image.path));
+      final url = await ref.getDownloadURL();
+      return url;
+    } on FirebaseException catch (e) {
+      //print('Firebase Exception: ${e.message}');
+      throw AFirebaseAuthException(e.code).message;
+    } on FormatException catch (_) {
+      throw const AFormatException();
+    } on PlatformException catch (e) {
+      throw APlatformException(e.code).message;
+    } catch (e) {
+      throw ATexts.wentWrong;
+    }
+  }
+
+  // Function to fetch list of transactions from Firestore
+  Stream<List<TransactionModel>> getTransactions(String userId) {
+    try {
+      // Reference to the user's document
+      DocumentReference userRef = _db.collection('Users').doc(userId);
+
+      // Reference to the "Transaction" subcollection
+      CollectionReference transactionRef = userRef.collection('Transactions');
+
+      // Fetch and listen to changes in the "Transaction" subcollection
+      return transactionRef.snapshots().map((snapshot) => snapshot.docs
+          .map((doc) => TransactionModel.fromSnapshot(
+              doc as DocumentSnapshot<Map<String, dynamic>>))
+          .toList());
+    } catch (e) {
+      // Handle error
+      return const Stream.empty();
     }
   }
 }

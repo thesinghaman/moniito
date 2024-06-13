@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:moniito_v2/features/app/models/transaction_model.dart';
-import 'package:unicons/unicons.dart';
-import 'package:moniito_v2/features/app/controllers/transaction_controller.dart';
 
-class TransactionsCategory extends StatelessWidget {
-  const TransactionsCategory({super.key});
+import 'package:get/get.dart';
+import 'package:unicons/unicons.dart';
+
+import '/features/app/controllers/transaction_controller.dart';
+
+class ATransactionsCategory extends StatelessWidget {
+  const ATransactionsCategory({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = TransactionController.instance;
     Size size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -88,10 +88,10 @@ class TransactionsCategory extends StatelessWidget {
                         ],
                       ),
                     );
-                  }).toList(),
+                  }),
                 ],
               );
-            }).toList(),
+            }),
           ],
         );
       }),

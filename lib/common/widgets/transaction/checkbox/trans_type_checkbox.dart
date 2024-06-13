@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
-import '../../../controllers/transaction_controller.dart';
+import '/utils/constants/text_strings.dart';
+import '/features/app/controllers/transaction_controller.dart';
 
 class ATransTypeCheckbox extends StatelessWidget {
   const ATransTypeCheckbox({
@@ -21,7 +22,7 @@ class ATransTypeCheckbox extends StatelessWidget {
       () => Row(
         children: [
           Checkbox(
-            value: title == 'Expense'
+            value: title == ATexts.expense
                 ? controller.isExpense.value
                 : controller.isIncome.value,
             fillColor: WidgetStateColor.resolveWith((states) {
@@ -33,10 +34,10 @@ class ATransTypeCheckbox extends StatelessWidget {
             }),
             onChanged: (bool? newValue) {
               if (newValue != null) {
-                if (title == 'Expense' && newValue) {
+                if (title == ATexts.expense && newValue) {
                   controller.isExpense.value = true;
                   controller.isIncome.value = false; // Deselect income
-                } else if (title == 'Income' && newValue) {
+                } else if (title == ATexts.income && newValue) {
                   controller.isIncome.value = true;
                   controller.isExpense.value = false; // Deselect expense
                 }
