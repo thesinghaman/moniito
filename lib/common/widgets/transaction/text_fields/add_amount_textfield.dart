@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '/utils/constants/colors.dart';
+import '/utils/validators/validation.dart';
 import '/utils/constants/sizes.dart';
 import '/utils/constants/text_strings.dart';
 
@@ -36,7 +37,11 @@ class AAddAmountTextField extends StatelessWidget {
 
               // TextField
               Expanded(
-                child: TextField(
+                child: TextFormField(
+                  validator: (value) => AValidator.validateAmount(value),
+                  inputFormatters: [
+                    IntegerDecimalThousandsSeparatorInputFormatter(),
+                  ],
                   controller: amount,
                   maxLength: 15,
                   maxLines: 1,

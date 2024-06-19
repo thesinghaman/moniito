@@ -1,3 +1,7 @@
+import 'package:flutter/services.dart';
+
+import 'package:intl/intl.dart';
+
 /// VALIDATION CLASS
 class AValidator {
   /// Empty Text Validation
@@ -100,5 +104,87 @@ class AValidator {
     return null;
   }
 
-// Add more custom validators as needed for your specific requirements.
+  /// Transaction Title Validation
+  static String? validateTransactionTitle(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Transaction Title is required.';
+    }
+
+    return null;
+  }
+
+  /// Transaction Category Validation
+  static String? validateCategory(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please select category.';
+    }
+
+    return null;
+  }
+
+  /// Transaction Date Validation
+  static String? validateDate(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please select the date of transaction';
+    }
+
+    return null;
+  }
+
+  /// Transaction Description Validation
+  static String? validateDescription(String? value) {
+    return null;
+  }
+
+  /// Transaction Amount Validation with Formatter
+  static String? validateAmount(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Amount is Required';
+    }
+
+    // Remove thousands separator and convert to plain number string
+    final cleanValue = value.replaceAll(RegExp(r'[^\d.]'), '');
+
+    // Validate if the input is a valid number
+    final isValidAmount = RegExp(r'^\d*\.?\d*$').hasMatch(cleanValue);
+    if (!isValidAmount) {
+      return 'Enter amount correctly.';
+    }
+
+    return null;
+  }
+}
+
+class IntegerDecimalThousandsSeparatorInputFormatter
+    extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    // Remove all non-digit and non-decimal point characters from the new text.
+    final cleanText = newValue.text.replaceAll(RegExp(r'[^\d.]'), '');
+
+    // Split the cleaned text into integer and decimal parts.
+    final parts = cleanText.split('.');
+    String integerPart = parts[0];
+    String decimalPart = parts.length > 1 ? '.${parts[1]}' : '';
+
+    // Validate if the input is a valid integer or decimal value.
+    if (RegExp(r'^\d*\.?\d*$').hasMatch(cleanText)) {
+      // Format the integer part with thousands separators.
+      final formattedValue =
+          NumberFormat.decimalPattern().format(int.parse(integerPart));
+
+      // Combine the formatted integer part with the decimal part (if any).
+      String formattedText = formattedValue + decimalPart;
+
+      // Return the formatted text with the cursor at the end.
+      return newValue.copyWith(
+        text: formattedText,
+        selection: TextSelection.collapsed(offset: formattedText.length),
+      );
+    } else {
+      // If the input is not valid, return the old value.
+      return oldValue;
+    }
+  }
 }

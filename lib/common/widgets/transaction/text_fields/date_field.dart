@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 
-import 'package:get/get.dart';
-
+import '/common/widgets/transaction/text_fields/date_picker.dart';
 import '/features/app/controllers/transaction_controller.dart';
-import '/features/app/screens/transaction_add/widgets/trans_category.dart';
-import '/utils/constants/enums.dart';
 import '/utils/validators/validation.dart';
 import '/utils/constants/colors.dart';
 import '/utils/constants/sizes.dart';
 import '/utils/constants/text_strings.dart';
 import '/utils/icons/iconsax_icons.dart';
 
-class ACategoryField extends StatelessWidget {
-  const ACategoryField({super.key});
+class ADateField extends StatelessWidget {
+  const ADateField({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,30 +20,24 @@ class ACategoryField extends StatelessWidget {
           horizontal: ASizes.md, vertical: ASizes.xs - 1),
       child: TextFormField(
         readOnly: true,
-        onTap: () async {
-          Category? selectedCategory =
-              await Get.to(() => const ATransactionsCategory());
-          if (selectedCategory == null) {
-            return;
-          }
-          controller.categoryController.text =
-              categoryType.values.elementAt(selectedCategory.index).toString();
+        onTap: () {
+          ADatePicker.selectDate(context, controller.dateController);
         },
-        controller: controller.categoryController,
-        validator: (value) => AValidator.validateCategory(value),
+        controller: controller.dateController,
+        validator: (value) => AValidator.validateDate(value),
         maxLines: 1,
         style: Theme.of(context)
             .textTheme
             .headlineSmall!
             .copyWith(color: AColors.darkerGrey, fontWeight: FontWeight.w500),
         decoration: InputDecoration(
-            hintText: ATexts.category,
+            hintText: ATexts.date,
             hintStyle: const TextStyle().copyWith(
                 fontSize: ASizes.fontSizeLg,
                 color: AColors.darkGrey,
                 fontWeight: FontWeight.w500,
                 fontFamily: 'Uber Move'),
-            prefixIcon: const Icon(Iconsax.category, color: AColors.darkGrey),
+            prefixIcon: const Icon(Iconsax.calendar_1, color: AColors.darkGrey),
             suffixIcon:
                 const Icon(Iconsax.arrow_down_1, color: AColors.darkGrey),
             border: InputBorder.none,

@@ -4,11 +4,17 @@ import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '/home_menu.dart';
+import '/utils/constants/image_strings.dart';
+import '/utils/constants/text_strings.dart';
+import '/utils/helpers/network_manager.dart';
+import '/utils/popups/full_screen_loader.dart';
+import '/utils/popups/loaders.dart';
+import '/utils/constants/enums.dart';
+
 import '/data/repositories/transaction/transaction_repository.dart';
 import '/data/repositories/user/user_repository.dart';
 import '/features/app/models/transaction_model.dart';
-import '/utils/popups/loaders.dart';
-import '/utils/constants/enums.dart';
 
 // Controller for managing transactions
 class TransactionController extends GetxController {
@@ -24,15 +30,19 @@ class TransactionController extends GetxController {
   final TextEditingController transactionTitle = TextEditingController();
   final TextEditingController description = TextEditingController();
   final TextEditingController searchController = TextEditingController();
+  final TextEditingController categoryController = TextEditingController();
+  final TextEditingController dateController = TextEditingController();
 
   // Observables
   Rx<Category> selectedCategory = Category.artAndCrafts.obs;
   RxList<MapEntry<Category, String>> filteredCategories =
       <MapEntry<Category, String>>[].obs;
-  Rx<String> category = ''.obs;
   Rx<XFile> image = XFile('').obs;
   Rx<bool> isExpense = true.obs;
   Rx<bool> isIncome = false.obs;
+
+  // Form Keys
+  final addTransactionFormKey = GlobalKey<FormState>();
 
   @override
   void onInit() {
@@ -54,35 +64,68 @@ class TransactionController extends GetxController {
 
   // Save user transactions
   Future<void> saveUserTransactions() async {
-    String imageUrl = '';
-    // Check if there's an image to upload
-    if (image.value.path.isNotEmpty) {
-      imageUrl = await uploadReceiptImage();
+    try {
+      // Start Loading
+      AFullScreenLoader.openLoadingDialog(
+          'Saving Transaction...', AImages.docerAnimation);
 
-      // If there's an image but failed to upload, return
-      if (imageUrl.isEmpty) return;
-    }
+      // Check Internet Connectivity
+      final isConnected = await NetworkManager.instance.isConnected();
+      if (!isConnected) {
+        // Remove Loader
+        AFullScreenLoader.stopLoading();
+        return;
+      }
 
-    // Create TransactionModel
-    TransactionModel newTransaction = TransactionModel(
-        amount: amount.text.toString(),
+      // Form Validation
+      if (!addTransactionFormKey.currentState!.validate()) {
+        // Remove Loader
+        AFullScreenLoader.stopLoading();
+        return;
+      }
+
+      String imageUrl = '';
+      // Check if there's an image to upload
+      if (image.value.path.isNotEmpty) {
+        imageUrl = await uploadReceiptImage();
+      }
+
+      // Remove thousands separator and convert to plain number string
+      final amountValue =
+          amount.text.toString().replaceAll(RegExp(r'[^\d.]'), '');
+
+      // Create TransactionModel
+      TransactionModel newTransaction = TransactionModel(
+        amount: amountValue,
         transactionTitle: transactionTitle.text.toString(),
         isExpense: isExpense.value,
-        category: category.value,
+        category: categoryController.text.toString(),
         receiptImage: imageUrl,
         description: description.value.text.toString(),
-        date: '12-06-2024');
+        date: dateController.text.toString(),
+      );
 
-    // Fetch user details
-    final user = await userRepository.fetchUserDetails();
+      // Fetch user details
+      final user = await userRepository.fetchUserDetails();
 
-    // Save transaction
-    final transactionId =
-        await transactionRepository.saveTransaction(user, newTransaction);
+      // Save transaction
+      final transactionId =
+          await transactionRepository.saveTransaction(user, newTransaction);
 
-    // If transaction saved successfully, set transaction id
-    if (transactionId != '') {
+      // Update Transaction ID
       newTransaction.id = transactionId;
+
+      // Remove Loader
+      AFullScreenLoader.stopLoading();
+
+      // Redirect to HomeScreen if Transaction is Saved Successfully.
+      Get.offAll(() => const HomeMenu());
+    } catch (e) {
+      // Remove Loader
+      AFullScreenLoader.stopLoading();
+
+      // Show some Generic Error to the user
+      ALoaders.errorSnackBar(title: ATexts.errorText, message: e.toString());
     }
   }
 
@@ -100,16 +143,13 @@ class TransactionController extends GetxController {
             initAspectRatio: CropAspectRatioPreset.original,
             lockAspectRatio: false,
             aspectRatioPresets: [
-              CropAspectRatioPreset.square,
-              CropAspectRatioPreset.ratio3x2,
               CropAspectRatioPreset.original,
+              CropAspectRatioPreset.square,
               CropAspectRatioPreset.ratio4x3,
-              CropAspectRatioPreset.ratio16x9
             ],
           ),
           IOSUiSettings(
             title: 'Crop Image',
-            minimumAspectRatio: 1.0,
             aspectRatioPresets: [
               CropAspectRatioPreset.square,
               CropAspectRatioPreset.ratio3x2,
