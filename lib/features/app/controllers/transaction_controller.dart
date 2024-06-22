@@ -12,6 +12,7 @@ import '/utils/helpers/network_manager.dart';
 import '/utils/popups/full_screen_loader.dart';
 import '/utils/popups/loaders.dart';
 import '/utils/constants/enums.dart';
+import '/utils/constants/sizes.dart';
 import '/data/repositories/transaction/transaction_repository.dart';
 import '/data/repositories/user/user_repository.dart';
 import '/features/app/models/transaction_model.dart';
@@ -95,6 +96,12 @@ class TransactionController extends GetxController {
       // Check if there's an image to upload
       if (image.value.path.isNotEmpty) {
         imageUrl = await uploadReceiptImage();
+      }
+
+      if (imageUrl == '') {
+        // Remove Loader
+        AFullScreenLoader.stopLoading();
+        return;
       }
 
       // Remove thousands separator and convert to plain number string
@@ -230,7 +237,7 @@ class TransactionController extends GetxController {
     }
   }
 
-// Sort transactions by date
+  // Sort transactions by date
   void sortTransactionsByDate() {
     final dateFormat = DateFormat('dd MMM, yyyy');
     transactionsByDate.value = transactions.toList()
@@ -241,7 +248,7 @@ class TransactionController extends GetxController {
       });
   }
 
-// Sort transactions by month
+  // Sort transactions by month
   void sortTransactionsByMonth() {
     final dateFormat = DateFormat('dd MMM, yyyy');
     transactionsByMonth.value = transactions.toList()
@@ -252,7 +259,7 @@ class TransactionController extends GetxController {
       });
   }
 
-// Sort transactions by year
+  // Sort transactions by year
   void sortTransactionsByYear() {
     final dateFormat = DateFormat('dd MMM, yyyy');
     transactionsByYear.value = transactions.toList()
@@ -261,5 +268,48 @@ class TransactionController extends GetxController {
         var yearB = dateFormat.parse(b.date).year;
         return yearA.compareTo(yearB);
       });
+  }
+
+  /// Delete Account Warning Pop-Up
+  void deleteTransactionWarningPopup(String transactionId) {
+    Get.defaultDialog(
+        contentPadding: const EdgeInsets.all(ASizes.md),
+        title: 'Delete Transaction',
+        middleText:
+            'Are you sure you want to delete this transaction ? This action is not reversible.',
+        confirm: ElevatedButton(
+          onPressed: () async => deleteTransaction(transactionId),
+          child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: ASizes.lg),
+              child: Text('Delete')),
+        ),
+        cancel: OutlinedButton(
+            onPressed: () => Navigator.of(Get.overlayContext!).pop(),
+            child: const Text('Cancel')));
+  }
+
+  void deleteTransaction(String transactionId) async {
+    try {
+      // Start Loading
+      AFullScreenLoader.openLoadingDialog(
+          'Deleteing Transaction...', AImages.docerAnimation);
+
+      // Check Internet Connectivity
+      final isConnected = await NetworkManager.instance.isConnected();
+      if (!isConnected) {
+        // Remove Loader
+        AFullScreenLoader.stopLoading();
+        return;
+      }
+      transactionRepository.removeTransaction(transactionId);
+      AFullScreenLoader.stopLoading();
+      Get.offAll(() => const HomeMenu());
+    } catch (e) {
+      // Log the error or show a snackbar/message to the user
+      ALoaders.errorSnackBar(
+        title: 'Error',
+        message: 'Failed to fetch transactions: ${e.toString()}',
+      );
+    }
   }
 }

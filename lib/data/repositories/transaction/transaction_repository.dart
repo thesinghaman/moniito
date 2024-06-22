@@ -106,4 +106,23 @@ class TransactionRepository {
       return const Stream.empty();
     }
   }
+
+  Future<void> removeTransaction(String transactionId) async {
+    try {
+      await _db
+          .collection('Users')
+          .doc(AuthenticationRepository.instance.authUser?.uid)
+          .collection('Transactions')
+          .doc(transactionId)
+          .delete();
+    } on FirebaseException catch (e) {
+      throw AFirebaseAuthException(e.code).message;
+    } on FormatException catch (_) {
+      throw const AFormatException();
+    } on PlatformException catch (e) {
+      throw APlatformException(e.code).message;
+    } catch (e) {
+      throw ATexts.wentWrong;
+    }
+  }
 }

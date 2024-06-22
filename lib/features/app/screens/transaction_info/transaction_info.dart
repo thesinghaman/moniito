@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:moniito_v2/features/app/controllers/transaction_controller.dart';
 import 'package:unicons/unicons.dart';
 
 import '/common/widgets/dialogs/show_receipt_dialog.dart';
@@ -23,6 +24,7 @@ class TransactionInfoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Get the transaction data passed as arguments
     final TransactionModel transaction = Get.arguments;
+    final controller = TransactionController.instance;
     return Scaffold(
       backgroundColor: AColors.light,
       body: SingleChildScrollView(
@@ -43,10 +45,34 @@ class TransactionInfoScreen extends StatelessWidget {
                 centerTitle: true,
                 iconColor: AColors.white,
                 actions: [
-                  IconButton(
-                      onPressed: () {},
+                  PopupMenuButton<String>(
                       icon: const Icon(UniconsLine.ellipsis_v,
-                          color: AColors.white)),
+                          color: AColors.white),
+                      onSelected: (String result) {
+                        switch (result) {
+                          case 'Edit':
+                            // Handle edit action
+                            print('Edit selected');
+                            break;
+                          case 'Delete':
+                            controller
+                                .deleteTransactionWarningPopup(transaction.id);
+                            break;
+                        }
+                      },
+                      itemBuilder: (BuildContext context) =>
+                          <PopupMenuEntry<String>>[
+                            PopupMenuItem<String>(
+                              value: 'Edit',
+                              child: Text('Edit',
+                                  style: Theme.of(context).textTheme.bodyLarge),
+                            ),
+                            PopupMenuItem<String>(
+                              value: 'Delete',
+                              child: Text('Delete',
+                                  style: Theme.of(context).textTheme.bodyLarge),
+                            ),
+                          ])
                 ],
               ),
             ),

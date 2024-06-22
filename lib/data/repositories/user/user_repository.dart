@@ -94,10 +94,10 @@ class UserRepository extends GetxController {
   }
 
   /// Function to remove user data from Firestore.
-  Future<void> removeUserRecord(String userID) async {
+  Future<void> removeUserRecord(String userId) async {
     try {
       // Reference to the user's document
-      DocumentReference userRef = _db.collection("Users").doc(userID);
+      DocumentReference userRef = _db.collection("Users").doc(userId);
 
       // Get a reference to the "Transaction" subcollection
       CollectionReference transactionRef = userRef.collection("Transaction");
