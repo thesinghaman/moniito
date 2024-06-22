@@ -24,13 +24,12 @@ class ACategoryField extends StatelessWidget {
       child: TextFormField(
         readOnly: true,
         onTap: () async {
-          Category? selectedCategory =
+          String? selectedCategory =
               await Get.to(() => const ATransactionsCategory());
           if (selectedCategory == null) {
             return;
           }
-          controller.categoryController.text =
-              categoryType.values.elementAt(selectedCategory.index).toString();
+          controller.categoryController.text = categories[selectedCategory]!;
         },
         controller: controller.categoryController,
         validator: (value) => AValidator.validateCategory(value),
@@ -40,21 +39,22 @@ class ACategoryField extends StatelessWidget {
             .headlineSmall!
             .copyWith(color: AColors.darkerGrey, fontWeight: FontWeight.w500),
         decoration: InputDecoration(
-            hintText: ATexts.category,
-            hintStyle: const TextStyle().copyWith(
-                fontSize: ASizes.fontSizeLg,
-                color: AColors.darkGrey,
-                fontWeight: FontWeight.w500,
-                fontFamily: 'Uber Move'),
-            prefixIcon: const Icon(Iconsax.category, color: AColors.darkGrey),
-            suffixIcon:
-                const Icon(Iconsax.arrow_down_1, color: AColors.darkGrey),
-            border: InputBorder.none,
-            counterText: '',
-            focusedBorder: const OutlineInputBorder().copyWith(
-              borderRadius: BorderRadius.circular(ASizes.inputFieldRadius),
-              borderSide: const BorderSide(width: 1, color: AColors.grey),
-            )),
+          hintText: ATexts.category,
+          hintStyle: const TextStyle().copyWith(
+            fontSize: ASizes.fontSizeLg,
+            color: AColors.darkGrey,
+            fontWeight: FontWeight.w500,
+            fontFamily: 'Uber Move',
+          ),
+          prefixIcon: const Icon(Iconsax.category, color: AColors.darkGrey),
+          suffixIcon: const Icon(Iconsax.arrow_down_1, color: AColors.darkGrey),
+          border: InputBorder.none,
+          counterText: '',
+          focusedBorder: const OutlineInputBorder().copyWith(
+            borderRadius: BorderRadius.circular(ASizes.inputFieldRadius),
+            borderSide: const BorderSide(width: 1, color: AColors.grey),
+          ),
+        ),
       ),
     );
   }

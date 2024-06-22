@@ -21,9 +21,9 @@ class ADateField extends StatelessWidget {
       child: TextFormField(
         readOnly: true,
         onTap: () {
-          ADatePicker.selectDate(context, controller.dateController);
+          ADatePicker.selectDate(context, controller.date);
         },
-        controller: controller.dateController,
+        controller: controller.date,
         validator: (value) => AValidator.validateDate(value),
         maxLines: 1,
         style: Theme.of(context)

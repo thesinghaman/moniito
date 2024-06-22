@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'package:image_picker/image_picker.dart';
 
+import '/features/app/controllers/transaction_controller.dart';
 import '/utils/icons/iconsax_icons.dart';
 
 class APicker {
-  static void showPicker(BuildContext context, final controller) {
+  static void showPicker(BuildContext context) {
+    final controller = TransactionController.instance;
     showModalBottomSheet(
       context: context,
       builder: (BuildContext buildContext) {

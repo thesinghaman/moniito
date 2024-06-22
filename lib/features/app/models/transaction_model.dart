@@ -51,7 +51,7 @@ class TransactionModel {
     if (document.data() != null) {
       final data = document.data()!;
       return TransactionModel(
-        id: document.id,
+        id: data['id'],
         isExpense: data['IsExpense'] ?? '',
         transactionTitle: data['TransactionTitle'] ?? '',
         category: data['Category'] ?? '',

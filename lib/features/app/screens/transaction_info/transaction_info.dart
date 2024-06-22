@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+
+import 'package:get/get.dart';
 import 'package:unicons/unicons.dart';
 
+import '/common/widgets/dialogs/show_receipt_dialog.dart';
 import '/common/widgets/appbar/appbar.dart';
 import '/common/widgets/container/primary_header_container.dart';
-import '/common/widgets/buttons/outlined_button.dart';
+import '/features/app/models/transaction_model.dart';
+import '/utils/constants/enums.dart';
+import '/utils/helpers/helper_functions.dart';
 import '/utils/constants/colors.dart';
 import '/utils/constants/sizes.dart';
 import '/utils/constants/text_strings.dart';
@@ -12,12 +17,12 @@ import 'widgets/transaction_menu.dart';
 import 'widgets/transaction_type_text.dart';
 
 class TransactionInfoScreen extends StatelessWidget {
-  const TransactionInfoScreen({
-    super.key,
-  });
+  const TransactionInfoScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Get the transaction data passed as arguments
+    final TransactionModel transaction = Get.arguments;
     return Scaffold(
       backgroundColor: AColors.light,
       body: SingleChildScrollView(
@@ -47,17 +52,18 @@ class TransactionInfoScreen extends StatelessWidget {
             ),
 
             // -- Transaction Logo
-            const ATransactionLogo(
-                color: AColors.warning, icon: UniconsLine.wrench),
+            ATransactionLogo(
+                color: categoryColors[transaction.category]!,
+                icon: categoryIcons[transaction.category]!),
             const SizedBox(height: ASizes.spaceBtwItems),
 
             // -- Transaction Type Text
-            const ATransactionTypeText(isExpense: true),
+            ATransactionTypeText(isExpense: transaction.isExpense),
             const SizedBox(height: ASizes.spaceBtwItems),
 
             // -- Transaction Amount Text
             Text(
-              '${ATexts.indianRupee} 500.00',
+              '${ATexts.indianRupee} ${AHelperFunctions.formatAmount(double.parse(transaction.amount))}',
               style: Theme.of(context)
                   .textTheme
                   .headlineMedium!
@@ -66,17 +72,29 @@ class TransactionInfoScreen extends StatelessWidget {
             const SizedBox(height: ASizes.spaceBtwSections),
 
             // -- Transaction Menu
-            const ATransactionMenu(
-              title: ATexts.titleValue,
-              category: ATexts.categoryValue,
-              time: ATexts.timeValue,
-              date: ATexts.dateValue,
-              notes: ATexts.comment,
+            ATransactionMenu(
+              title: transaction.transactionTitle,
+              category: categories[transaction.category]!,
+              date: transaction.date,
+              notes: transaction.description.isEmpty
+                  ? 'No notes added.'
+                  : transaction.description,
             ),
-            const SizedBox(height: ASizes.spaceBtwSections * 2),
+            const SizedBox(height: ASizes.spaceBtwSections * 1.5),
+
+            // Receipt section
+            if (transaction.receiptImage.isNotEmpty)
+              OutlinedButton(
+                onPressed: () {
+                  // Show receipt image with loading indicator and blurred background
+                  Get.dialog(
+                      ReceiptDialog(receiptImageUrl: transaction.receiptImage));
+                },
+                child: const Text('Show Receipt'),
+              )
 
             // 'Download Receipt' Button
-            const AOutlinedButton(text: ATexts.downloadReceipt),
+            //const AOutlinedButton(text: ATexts.downloadReceipt),
           ],
         ),
       ),

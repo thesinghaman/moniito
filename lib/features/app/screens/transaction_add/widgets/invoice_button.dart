@@ -21,7 +21,7 @@ class AAddInvoiceButton extends StatelessWidget {
           if (controller.image.value.path.isEmpty)
             AAddReceiptOutlinedButton(
               title: title,
-              onPressed: () => APicker.showPicker(context, controller),
+              onPressed: () => APicker.showPicker(context),
             )
           else
             AReceiptImageContainer(

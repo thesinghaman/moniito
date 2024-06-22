@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 import '/home_menu.dart';
 import '/utils/constants/image_strings.dart';
@@ -11,7 +12,6 @@ import '/utils/helpers/network_manager.dart';
 import '/utils/popups/full_screen_loader.dart';
 import '/utils/popups/loaders.dart';
 import '/utils/constants/enums.dart';
-
 import '/data/repositories/transaction/transaction_repository.dart';
 import '/data/repositories/user/user_repository.dart';
 import '/features/app/models/transaction_model.dart';
@@ -29,17 +29,21 @@ class TransactionController extends GetxController {
   final TextEditingController amount = TextEditingController();
   final TextEditingController transactionTitle = TextEditingController();
   final TextEditingController description = TextEditingController();
+  final TextEditingController date = TextEditingController();
   final TextEditingController searchController = TextEditingController();
   final TextEditingController categoryController = TextEditingController();
-  final TextEditingController dateController = TextEditingController();
 
   // Observables
-  Rx<Category> selectedCategory = Category.artAndCrafts.obs;
-  RxList<MapEntry<Category, String>> filteredCategories =
-      <MapEntry<Category, String>>[].obs;
+  Rx<String> selectedCategory = ''.obs;
+  RxList<MapEntry<String, String>> filteredCategories =
+      <MapEntry<String, String>>[].obs;
   Rx<XFile> image = XFile('').obs;
   Rx<bool> isExpense = true.obs;
   Rx<bool> isIncome = false.obs;
+  RxList<TransactionModel> transactions = <TransactionModel>[].obs;
+  RxList<TransactionModel> transactionsByDate = <TransactionModel>[].obs;
+  RxList<TransactionModel> transactionsByMonth = <TransactionModel>[].obs;
+  RxList<TransactionModel> transactionsByYear = <TransactionModel>[].obs;
 
   // Form Keys
   final addTransactionFormKey = GlobalKey<FormState>();
@@ -48,8 +52,11 @@ class TransactionController extends GetxController {
   void onInit() {
     super.onInit();
     // Initialize filtered categories on controller initialization
-    filteredCategories.value = categoryType.entries.toList()
+    filteredCategories.value = categories.entries.toList()
       ..sort((a, b) => a.value.compareTo(b.value));
+
+    // Fetch user transactions on controller initialization
+    fetchUserTransactions();
   }
 
   // Set image file
@@ -99,10 +106,10 @@ class TransactionController extends GetxController {
         amount: amountValue,
         transactionTitle: transactionTitle.text.toString(),
         isExpense: isExpense.value,
-        category: categoryController.text.toString(),
+        category: selectedCategory.value,
         receiptImage: imageUrl,
         description: description.value.text.toString(),
-        date: dateController.text.toString(),
+        date: date.text.toString(),
       );
 
       // Fetch user details
@@ -186,20 +193,73 @@ class TransactionController extends GetxController {
     return '';
   }
 
-  // Filter categories based on text input
   void filterCategories(String text) {
-    // Filter categories based on search text
-    filteredCategories.value = categoryType.entries
+    filteredCategories.value = categories.entries
         .where(
             (entry) => entry.value.toLowerCase().contains(text.toLowerCase()))
         .toList()
       ..sort((a, b) => a.value.compareTo(b.value));
 
-    // If no categories found, show Miscellaneous
     if (filteredCategories.isEmpty) {
       filteredCategories.value = [
-        const MapEntry(Category.miscellaneous, 'Miscellaneous')
+        const MapEntry("miscellaneous", 'Miscellaneous')
       ];
     }
+  }
+
+  void fetchUserTransactions() async {
+    try {
+      // Fetch user details
+      final user = await userRepository.fetchUserDetails();
+
+      // Listen to transactions stream
+      transactionRepository.getTransactions(user.id).listen((transactionList) {
+        transactions.value = transactionList;
+
+        // Update sorted transactions
+        sortTransactionsByDate();
+        sortTransactionsByMonth();
+        sortTransactionsByYear();
+      });
+    } catch (e) {
+      // Log the error or show a snackbar/message to the user
+      ALoaders.errorSnackBar(
+        title: 'Error',
+        message: 'Failed to fetch transactions: ${e.toString()}',
+      );
+    }
+  }
+
+// Sort transactions by date
+  void sortTransactionsByDate() {
+    final dateFormat = DateFormat('dd MMM, yyyy');
+    transactionsByDate.value = transactions.toList()
+      ..sort((b, a) {
+        var dateA = dateFormat.parse(a.date);
+        var dateB = dateFormat.parse(b.date);
+        return dateA.compareTo(dateB);
+      });
+  }
+
+// Sort transactions by month
+  void sortTransactionsByMonth() {
+    final dateFormat = DateFormat('dd MMM, yyyy');
+    transactionsByMonth.value = transactions.toList()
+      ..sort((b, a) {
+        var monthA = dateFormat.parse(a.date).month;
+        var monthB = dateFormat.parse(b.date).month;
+        return monthA.compareTo(monthB);
+      });
+  }
+
+// Sort transactions by year
+  void sortTransactionsByYear() {
+    final dateFormat = DateFormat('dd MMM, yyyy');
+    transactionsByYear.value = transactions.toList()
+      ..sort((b, a) {
+        var yearA = dateFormat.parse(a.date).year;
+        var yearB = dateFormat.parse(b.date).year;
+        return yearA.compareTo(yearB);
+      });
   }
 }

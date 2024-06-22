@@ -11,12 +11,11 @@ class ATransactionMenu extends StatelessWidget {
     super.key,
     required this.title,
     required this.category,
-    required this.time,
     required this.date,
     required this.notes,
   });
 
-  final String title, category, time, date, notes;
+  final String title, category, date, notes;
 
   @override
   Widget build(BuildContext context) {
@@ -35,10 +34,6 @@ class ATransactionMenu extends StatelessWidget {
 
           // Category
           ATransactionMenuText(title: ATexts.category, value: category),
-          const SizedBox(height: ASizes.sm),
-
-          // Time
-          ATransactionMenuText(title: ATexts.time, value: time),
           const SizedBox(height: ASizes.sm),
 
           // Date

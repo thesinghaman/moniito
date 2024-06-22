@@ -16,7 +16,7 @@ class ATransactionCard extends StatelessWidget {
       required this.color,
       required this.icon,
       required this.amount,
-      this.credit = false,
+      this.isExpense = true,
       this.date = ""});
 
   final String transactionTitle;
@@ -25,7 +25,7 @@ class ATransactionCard extends StatelessWidget {
   final String? date;
   final IconData icon;
   final double amount;
-  final bool? credit;
+  final bool? isExpense;
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +74,7 @@ class ATransactionCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   /// -- Transaction Amount
-                  ATransactionAmount(amount: amount),
+                  ATransactionAmount(amount: amount, isExpense: isExpense),
                   const SizedBox(height: ASizes.xs),
 
                   /// -- Date

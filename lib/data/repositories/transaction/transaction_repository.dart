@@ -42,16 +42,16 @@ class TransactionRepository {
     }
   }
 
-  /// Update any field in specific Transactions collection
-  Future<void> updateSingleField(
-      Map<String, dynamic> json, String transactionId) async {
+  /// Update any fields in specific Transactions collection
+  Future<void> updateTransactions(
+      Map<String, dynamic> fields, String transactionId) async {
     try {
       await _db
           .collection("Users")
           .doc(AuthenticationRepository.instance.authUser?.uid)
           .collection("Transactions")
           .doc(transactionId)
-          .update(json);
+          .update(fields);
     } on FirebaseException catch (e) {
       throw AFirebaseAuthException(e.code).message;
     } on FormatException catch (_) {
@@ -71,7 +71,6 @@ class TransactionRepository {
       final url = await ref.getDownloadURL();
       return url;
     } on FirebaseException catch (e) {
-      //print('Firebase Exception: ${e.message}');
       throw AFirebaseAuthException(e.code).message;
     } on FormatException catch (_) {
       throw const AFormatException();
@@ -96,6 +95,12 @@ class TransactionRepository {
           .map((doc) => TransactionModel.fromSnapshot(
               doc as DocumentSnapshot<Map<String, dynamic>>))
           .toList());
+    } on FirebaseException catch (e) {
+      throw AFirebaseAuthException(e.code).message;
+    } on FormatException catch (_) {
+      throw const AFormatException();
+    } on PlatformException catch (e) {
+      throw APlatformException(e.code).message;
     } catch (e) {
       // Handle error
       return const Stream.empty();

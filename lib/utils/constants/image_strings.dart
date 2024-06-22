@@ -18,6 +18,9 @@ class AImages {
       "assets/images/animations/sammy-line-travel-backpack-with-passport-and-air-ticket.gif";
 
   // -- Lottie Animations
+
+  static const String noTransactionIllustration =
+      "assets/images/animations/no_transaction.json";
   static String cartAnimation =
       "assets/images/animations/lady-adding-product-in-cart-animation.json";
   static String orderCompletedAnimation =

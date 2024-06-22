@@ -1,7 +1,8 @@
 // Import necessary packages and files
 import 'package:flutter/material.dart';
+
 import 'package:get/get.dart';
-import 'package:unicons/unicons.dart';
+import 'package:lottie/lottie.dart';
 
 // Importing custom widgets and constants
 import '/common/widgets/cards/overview_card/overview_card.dart';
@@ -10,8 +11,10 @@ import '/common/widgets/cards/transaction_card/transaction_card.dart';
 import '/utils/constants/sizes.dart';
 import '/utils/constants/text_strings.dart';
 import '/utils/constants/colors.dart';
-import '/utils/icons/iconsax_icons.dart';
-import '../transaction_info/transaction_info.dart';
+import '/utils/constants/enums.dart';
+import '/utils/constants/image_strings.dart';
+import '/features/app/controllers/transaction_controller.dart';
+import '/features/app/screens/transaction_info/transaction_info.dart';
 import '/home_menu.dart';
 import 'widgets/home_appbar.dart';
 
@@ -20,80 +23,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var list = [
-      const ATransactionCard(
-        transactionTitle: 'Tasty Pizza from Pizza King',
-        categoryType: 'Food / Dining',
-        color: AColors.warning,
-        icon: UniconsLine.utensils,
-        amount: 6500000,
-        date: 'Sat, 30 Mar 2023',
-      ),
-      const ATransactionCard(
-        transactionTitle: 'Shirt',
-        categoryType: 'Shopping',
-        color: AColors.success,
-        icon: UniconsLine.shopping_cart,
-        amount: 1500,
-        date: 'Sat, 30 Mar 2023',
-      ),
-      const ATransactionCard(
-        transactionTitle: 'Petrol',
-        categoryType: 'Fuel',
-        color: Colors.blue,
-        icon: UniconsLine.pump,
-        amount: 275,
-        date: 'Sat, 30 Mar 2023',
-      ),
-      const ATransactionCard(
-        transactionTitle: 'EMI',
-        categoryType: 'Loan / Dues',
-        color: Colors.purpleAccent,
-        icon: UniconsLine.bill,
-        amount: 10755,
-        date: 'Sat, 30 Mar 2023',
-      ),
-      const ATransactionCard(
-        transactionTitle: 'Netflix',
-        categoryType: 'Subscriptions',
-        color: Colors.blueGrey,
-        icon: UniconsLine.globe,
-        amount: 499,
-        date: 'Sat, 30 Mar 2023',
-      ),
-      const ATransactionCard(
-        transactionTitle: 'Uber',
-        categoryType: 'Travel',
-        color: Colors.orangeAccent,
-        icon: UniconsLine.metro,
-        amount: 250,
-        date: 'Sat, 30 Mar 2023',
-      ),
-      const ATransactionCard(
-        transactionTitle: 'iPhone',
-        categoryType: 'Gadgets / Electronics',
-        color: Colors.greenAccent,
-        icon: Iconsax.mobile,
-        amount: 6500000,
-        date: 'Sat, 30 Mar 2023',
-      ),
-      const ATransactionCard(
-        transactionTitle: 'Macbook Battery',
-        categoryType: 'Repair',
-        color: Colors.redAccent,
-        icon: UniconsLine.wrench,
-        amount: 15000,
-        date: 'Sat, 30 Mar 2023',
-      ),
-      const ATransactionCard(
-        transactionTitle: 'Mom\'s Gift',
-        categoryType: 'Gift',
-        color: Colors.lightBlueAccent,
-        icon: UniconsLine.gift,
-        amount: 2475,
-        date: 'Sat, 30 Mar 2023',
-      )
-    ];
+    final controller = Get.put(TransactionController());
+
     return Scaffold(
       backgroundColor: AColors.light,
       body: SingleChildScrollView(
@@ -125,22 +56,52 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: ASizes.md),
 
             /// -- List of Recent Transactions
-            GestureDetector(
-              onTap: () => Get.to(const TransactionInfoScreen()),
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (BuildContext context, index) {
-                  return Column(
-                    children: [
-                      list[index],
-                      const SizedBox(height: ASizes.md),
-                    ],
-                  );
-                },
-                itemCount: 9,
-              ),
+            Obx(
+              () => controller.transactionsByDate.isEmpty
+                  ? Padding(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: ASizes.md),
+                      child: Column(
+                        children: [
+                          Lottie.asset(AImages.noTransactionIllustration,
+                              width: MediaQuery.of(context).size.width * 0.8),
+                          Text('No transactions to show. Try adding some.',
+                              style: Theme.of(context).textTheme.titleMedium),
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (BuildContext context, index) {
+                        final transaction =
+                            controller.transactionsByDate[index];
+                        return GestureDetector(
+                          onTap: () => Get.to(
+                            () => const TransactionInfoScreen(),
+                            arguments: transaction,
+                          ),
+                          child: Column(
+                            children: [
+                              ATransactionCard(
+                                transactionTitle: transaction.transactionTitle,
+                                categoryType: categories[transaction.category]!,
+                                color: categoryColors[transaction.category]!,
+                                icon: categoryIcons[transaction.category]!,
+                                amount: double.parse(transaction.amount),
+                                date: transaction.date,
+                                isExpense: transaction.isExpense,
+                              ),
+                              const SizedBox(height: ASizes.md),
+                            ],
+                          ),
+                        );
+                      },
+                      itemCount: controller.transactions.length > 10
+                          ? 10
+                          : controller.transactions.length,
+                    ),
             ),
           ],
         ),
