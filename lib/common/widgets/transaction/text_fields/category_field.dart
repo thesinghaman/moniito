@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
-import '/features/app/controllers/transaction_controller.dart';
 import '/features/app/screens/transaction_add/widgets/trans_category.dart';
 import '/utils/constants/enums.dart';
 import '/utils/validators/validation.dart';
@@ -12,12 +11,12 @@ import '/utils/constants/text_strings.dart';
 import '/utils/icons/iconsax_icons.dart';
 
 class ACategoryField extends StatelessWidget {
-  const ACategoryField({super.key});
+  const ACategoryField({super.key, required this.controller});
+
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
-    final controller = TransactionController.instance;
-
     return Padding(
       padding: const EdgeInsets.symmetric(
           horizontal: ASizes.md, vertical: ASizes.xs - 1),
@@ -29,9 +28,9 @@ class ACategoryField extends StatelessWidget {
           if (selectedCategory == null) {
             return;
           }
-          controller.categoryController.text = categories[selectedCategory]!;
+          controller.text = categories[selectedCategory]!;
         },
-        controller: controller.categoryController,
+        controller: controller,
         validator: (value) => AValidator.validateCategory(value),
         maxLines: 1,
         style: Theme.of(context)

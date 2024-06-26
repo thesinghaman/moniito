@@ -7,6 +7,11 @@ class AFormatter {
         .format(date); // Customize the date format as needed
   }
 
+  static String formatAmount(double value) {
+    final formatter = NumberFormat.currency(symbol: '', decimalDigits: 0);
+    return formatter.format(value);
+  }
+
   static String formatCurrency(double amount) {
     return NumberFormat.currency(locale: 'en_US', symbol: '\$')
         .format(amount); // Customize the currency locale and symbol as needed

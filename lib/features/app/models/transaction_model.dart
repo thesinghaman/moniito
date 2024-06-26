@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Model class representing Transaction data.
 class TransactionModel {
-  String id;
+  String? id;
   final String amount;
   final String transactionTitle;
   final bool isExpense;

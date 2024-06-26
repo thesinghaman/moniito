@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'utils/constants/sizes.dart';
 import 'utils/constants/colors.dart';
 import 'utils/icons/iconsax_icons.dart';
+import '/features/app/controllers/transaction_controller.dart';
 
 // Importing all screens.
 import 'features/app/screens/home/home.dart';
@@ -127,6 +128,7 @@ class HomeMenu extends StatelessWidget {
 
 // Controller class for managing the state of the Home Menu screen
 class AppScreenController extends GetxController {
+  final controller = Get.put(TransactionController());
   // Singleton instance of AppScreenController
   static AppScreenController get instance => Get.find();
 
@@ -144,6 +146,7 @@ class AppScreenController extends GetxController {
 
   // Method to navigate to NewTransactionScreen
   void navigateToNewTransactionScreen() {
+    controller.clearFormFields();
     Get.to(() => const AddTransactionScreen())!.then((_) {
       // When back button is pressed in NewTransactionScreen, navigate to HomeScreen
       selectedMenu.value = 0;

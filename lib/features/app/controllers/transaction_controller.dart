@@ -13,6 +13,7 @@ import '/utils/popups/full_screen_loader.dart';
 import '/utils/popups/loaders.dart';
 import '/utils/constants/enums.dart';
 import '/utils/constants/sizes.dart';
+import '/utils/constants/colors.dart';
 import '/data/repositories/transaction/transaction_repository.dart';
 import '/data/repositories/user/user_repository.dart';
 import '/features/app/models/transaction_model.dart';
@@ -27,15 +28,16 @@ class TransactionController extends GetxController {
   final transactionRepository = Get.put(TransactionRepository());
 
   // Text editing controllers
-  final TextEditingController amount = TextEditingController();
-  final TextEditingController transactionTitle = TextEditingController();
-  final TextEditingController description = TextEditingController();
-  final TextEditingController date = TextEditingController();
-  final TextEditingController searchController = TextEditingController();
-  final TextEditingController categoryController = TextEditingController();
+  TextEditingController amount = TextEditingController();
+  TextEditingController transactionTitle = TextEditingController();
+  TextEditingController description = TextEditingController();
+  TextEditingController date = TextEditingController();
+  TextEditingController searchController = TextEditingController();
+  TextEditingController categoryController = TextEditingController();
 
   // Observables
   Rx<String> selectedCategory = ''.obs;
+  Rx<String> receiptImageUrl = ''.obs;
   RxList<MapEntry<String, String>> filteredCategories =
       <MapEntry<String, String>>[].obs;
   Rx<XFile> image = XFile('').obs;
@@ -48,6 +50,7 @@ class TransactionController extends GetxController {
 
   // Form Keys
   final addTransactionFormKey = GlobalKey<FormState>();
+  final editTransactionFormKey = GlobalKey<FormState>();
 
   @override
   void onInit() {
@@ -60,90 +63,49 @@ class TransactionController extends GetxController {
     fetchUserTransactions();
   }
 
-  // Set image file
+  /// Clear all fields.
+  void clearFormFields() {
+    amount.clear();
+    transactionTitle.clear();
+    description.clear();
+    date.clear();
+    categoryController.clear();
+    selectedCategory.value = '';
+    receiptImageUrl.value = '';
+    isExpense.value = true;
+    isIncome.value = false;
+    clearImage();
+  }
+
+  /// Set image file
   void setImage(XFile imageFile) {
     image.value = imageFile;
   }
 
-  // Clear selected image
+  /// Clear selected image
   void clearImage() {
     image.value = XFile('');
   }
 
-  // Save user transactions
-  Future<void> saveUserTransactions() async {
-    try {
-      // Start Loading
-      AFullScreenLoader.openLoadingDialog(
-          'Saving Transaction...', AImages.docerAnimation);
+  /// Function to filter categories based on a search text
+  void filterCategories(String text) {
+    // Filter the categories based on the search text (case-insensitive)
+    filteredCategories.value = categories.entries
+        .where(
+            (entry) => entry.value.toLowerCase().contains(text.toLowerCase()))
+        .toList()
+      // Sort the filtered categories alphabetically
+      ..sort((a, b) => a.value.compareTo(b.value));
 
-      // Check Internet Connectivity
-      final isConnected = await NetworkManager.instance.isConnected();
-      if (!isConnected) {
-        // Remove Loader
-        AFullScreenLoader.stopLoading();
-        return;
-      }
-
-      // Form Validation
-      if (!addTransactionFormKey.currentState!.validate()) {
-        // Remove Loader
-        AFullScreenLoader.stopLoading();
-        return;
-      }
-
-      String imageUrl = '';
-      // Check if there's an image to upload
-      if (image.value.path.isNotEmpty) {
-        imageUrl = await uploadReceiptImage();
-      }
-
-      if (imageUrl == '') {
-        // Remove Loader
-        AFullScreenLoader.stopLoading();
-        return;
-      }
-
-      // Remove thousands separator and convert to plain number string
-      final amountValue =
-          amount.text.toString().replaceAll(RegExp(r'[^\d.]'), '');
-
-      // Create TransactionModel
-      TransactionModel newTransaction = TransactionModel(
-        amount: amountValue,
-        transactionTitle: transactionTitle.text.toString(),
-        isExpense: isExpense.value,
-        category: selectedCategory.value,
-        receiptImage: imageUrl,
-        description: description.value.text.toString(),
-        date: date.text.toString(),
-      );
-
-      // Fetch user details
-      final user = await userRepository.fetchUserDetails();
-
-      // Save transaction
-      final transactionId =
-          await transactionRepository.saveTransaction(user, newTransaction);
-
-      // Update Transaction ID
-      newTransaction.id = transactionId;
-
-      // Remove Loader
-      AFullScreenLoader.stopLoading();
-
-      // Redirect to HomeScreen if Transaction is Saved Successfully.
-      Get.offAll(() => const HomeMenu());
-    } catch (e) {
-      // Remove Loader
-      AFullScreenLoader.stopLoading();
-
-      // Show some Generic Error to the user
-      ALoaders.errorSnackBar(title: ATexts.errorText, message: e.toString());
+    // If no categories match the search text, add a default category
+    if (filteredCategories.isEmpty) {
+      filteredCategories.value = [
+        const MapEntry("miscellaneous", 'Miscellaneous')
+      ];
     }
   }
 
-  // Pick image from source
+  /// Pick image from source
   Future<void> pickImage(ImageSource source) async {
     final pickedFile = await ImagePicker().pickImage(source: source);
     if (pickedFile != null) {
@@ -152,8 +114,8 @@ class TransactionController extends GetxController {
         uiSettings: [
           AndroidUiSettings(
             toolbarTitle: 'Crop Image',
-            toolbarColor: Colors.deepOrange,
-            toolbarWidgetColor: Colors.white,
+            toolbarColor: AColors.primary,
+            toolbarWidgetColor: AColors.white,
             initAspectRatio: CropAspectRatioPreset.original,
             lockAspectRatio: false,
             aspectRatioPresets: [
@@ -184,36 +146,201 @@ class TransactionController extends GetxController {
     }
   }
 
-  // Upload receipt image
-  Future<String> uploadReceiptImage() async {
+  /// Function to show a delete warning popup dialog
+  void deleteWarningPopup(
+      String title, String middleText, VoidCallback onConfirm) {
+    Get.defaultDialog(
+        contentPadding: const EdgeInsets.all(ASizes.md),
+        title: title,
+        middleText: middleText,
+        confirm: ElevatedButton(
+          onPressed: onConfirm,
+          child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: ASizes.lg),
+              child: Text('Delete')),
+        ),
+        cancel: OutlinedButton(
+            onPressed: () => Navigator.of(Get.overlayContext!).pop(),
+            child: const Text('Cancel')));
+  }
+
+  /// Save user transactions
+  Future<void> saveUserTransactions() async {
     try {
-      // Upload Image
-      final imageUrl = await transactionRepository.uploadReceiptImage(
-          'Users/Images/ReceiptImages/', image.value);
+      // Start Loading
+      AFullScreenLoader.openLoadingDialog(
+          'Saving Transaction...', AImages.docerAnimation);
 
-      return imageUrl;
+      // Check Internet Connectivity
+      final isConnected = await NetworkManager.instance.isConnected();
+      if (!isConnected) {
+        // Remove Loader
+        AFullScreenLoader.stopLoading();
+        return;
+      }
+
+      // Form Validation
+      if (!addTransactionFormKey.currentState!.validate()) {
+        // Remove Loader
+        AFullScreenLoader.stopLoading();
+        return;
+      }
+
+      // Check if there's an image to upload
+      if (image.value.path.isNotEmpty) {
+        await uploadReceiptImage();
+      }
+
+      if (receiptImageUrl.value == '' && image.value.path.isNotEmpty) {
+        // Remove Loader
+        AFullScreenLoader.stopLoading();
+        return;
+      }
+
+      // Remove thousands separator and convert to plain number string
+      final amountValue =
+          amount.text.toString().replaceAll(RegExp(r'[^\d.]'), '');
+
+      // Create TransactionModel
+      TransactionModel newTransaction = TransactionModel(
+        amount: amountValue,
+        transactionTitle: transactionTitle.text.toString(),
+        isExpense: isExpense.value,
+        category: selectedCategory.value,
+        receiptImage: receiptImageUrl.value,
+        description: description.value.text.toString(),
+        date: date.text.toString(),
+      );
+
+      // Fetch user details
+      final user = await userRepository.fetchUserDetails();
+
+      // Save transaction
+      final transactionId =
+          await transactionRepository.saveTransaction(user, newTransaction);
+
+      // Update Transaction ID
+      newTransaction.id = transactionId;
+
+      // Remove Loader
+      AFullScreenLoader.stopLoading();
+
+      // Redirect to HomeScreen if Transaction is Saved Successfully.
+      Get.offAll(() => const HomeMenu());
     } catch (e) {
-      // Show error snack bar if upload fails
+      // Remove Loader
+      AFullScreenLoader.stopLoading();
+
+      // Show some Generic Error to the user
+      ALoaders.errorSnackBar(title: ATexts.errorText, message: e.toString());
+    }
+  }
+
+  /// Function to edit the transaction of specified Id.
+  Future<void> editTransaction(TransactionModel transaction) async {
+    try {
+      // Start Loading
+      AFullScreenLoader.openLoadingDialog(
+          'Saving Transaction...', AImages.docerAnimation);
+
+      // Check Internet Connectivity
+      final isConnected = await NetworkManager.instance.isConnected();
+      if (!isConnected) {
+        // Remove Loader
+        AFullScreenLoader.stopLoading();
+        return;
+      }
+
+      // Form Validation
+      if (!editTransactionFormKey.currentState!.validate()) {
+        // Remove Loader
+        AFullScreenLoader.stopLoading();
+        return;
+      }
+
+      // If new receipt image is selected, upload that one and if previous receipt image exist, delete it.
+      if (image.value.path.isNotEmpty) {
+        await uploadReceiptImage();
+
+        if (transaction.receiptImage.isNotEmpty) {
+          await deleteReceiptImage(transaction.receiptImage);
+        }
+      }
+
+      // If new receipt image is not uploaded properly, show error and return
+      if (receiptImageUrl.value == '' && image.value.path.isNotEmpty) {
+        // Remove Loader
+        AFullScreenLoader.stopLoading();
+        return;
+      }
+
+      // Remove thousands separator and convert to plain number string
+      final amountValue =
+          amount.text.toString().replaceAll(RegExp(r'[^\d.]'), '');
+
+      // Create Transaction Model
+      final updatedTransaction = TransactionModel(
+        id: transaction.id,
+        transactionTitle: transactionTitle.text,
+        amount: amountValue,
+        isExpense: isExpense.value,
+        category: selectedCategory.value,
+        receiptImage: receiptImageUrl.value,
+        description: description.text,
+        date: date.text.toString(),
+      );
+
+      // Update transaction
+      updateTransaction(updatedTransaction);
+
+      // Remove Loader
+      AFullScreenLoader.stopLoading();
+    } catch (e) {
+      // Remove Loader
+      AFullScreenLoader.stopLoading();
+      // Show some Generic Error to the user
       ALoaders.errorSnackBar(
-          title: 'Oh Snap', message: 'Something went wrong : $e');
-    }
-    return '';
-  }
-
-  void filterCategories(String text) {
-    filteredCategories.value = categories.entries
-        .where(
-            (entry) => entry.value.toLowerCase().contains(text.toLowerCase()))
-        .toList()
-      ..sort((a, b) => a.value.compareTo(b.value));
-
-    if (filteredCategories.isEmpty) {
-      filteredCategories.value = [
-        const MapEntry("miscellaneous", 'Miscellaneous')
-      ];
+        title: 'Error',
+        message: 'Failed to update transaction: ${e.toString()}',
+      );
     }
   }
 
+  /// Function to delete the transaction
+  void deleteTransaction(String transactionId) async {
+    try {
+      // Start Loading
+      AFullScreenLoader.openLoadingDialog(
+          'Deleteing Transaction...', AImages.docerAnimation);
+
+      // Check Internet Connectivity
+      final isConnected = await NetworkManager.instance.isConnected();
+      if (!isConnected) {
+        // Remove Loader
+        AFullScreenLoader.stopLoading();
+        return;
+      }
+
+      // Delete the transaciton of the given ID
+      transactionRepository.deleteTransaction(transactionId);
+
+      // Stop Loading
+      AFullScreenLoader.stopLoading();
+
+      // Return to Home Page
+      Get.offAll(() => const HomeMenu());
+    } catch (e) {
+      // Stop Loading
+      AFullScreenLoader.stopLoading();
+      // Show some Generic Error to the user
+      ALoaders.errorSnackBar(
+        title: 'Error',
+        message: 'Failed to fetch transactions: ${e.toString()}',
+      );
+    }
+  }
+
+  /// Function to fetch all the transacitons of a user
   void fetchUserTransactions() async {
     try {
       // Fetch user details
@@ -229,7 +356,7 @@ class TransactionController extends GetxController {
         sortTransactionsByYear();
       });
     } catch (e) {
-      // Log the error or show a snackbar/message to the user
+      // Show some Generic Error to the user
       ALoaders.errorSnackBar(
         title: 'Error',
         message: 'Failed to fetch transactions: ${e.toString()}',
@@ -237,7 +364,7 @@ class TransactionController extends GetxController {
     }
   }
 
-  // Sort transactions by date
+// Sort transactions by date
   void sortTransactionsByDate() {
     final dateFormat = DateFormat('dd MMM, yyyy');
     transactionsByDate.value = transactions.toList()
@@ -270,45 +397,40 @@ class TransactionController extends GetxController {
       });
   }
 
-  /// Delete Account Warning Pop-Up
-  void deleteTransactionWarningPopup(String transactionId) {
-    Get.defaultDialog(
-        contentPadding: const EdgeInsets.all(ASizes.md),
-        title: 'Delete Transaction',
-        middleText:
-            'Are you sure you want to delete this transaction ? This action is not reversible.',
-        confirm: ElevatedButton(
-          onPressed: () async => deleteTransaction(transactionId),
-          child: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: ASizes.lg),
-              child: Text('Delete')),
-        ),
-        cancel: OutlinedButton(
-            onPressed: () => Navigator.of(Get.overlayContext!).pop(),
-            child: const Text('Cancel')));
+  /// Upload receipt image
+  Future<void> uploadReceiptImage() async {
+    try {
+      // Upload Image
+      receiptImageUrl.value = await transactionRepository.uploadReceiptImage(
+          'Users/Images/ReceiptImages/', image.value);
+    } catch (e) {
+      // Show some Generic Error to the user
+      ALoaders.errorSnackBar(title: ATexts.errorText, message: e.toString());
+    }
   }
 
-  void deleteTransaction(String transactionId) async {
+  /// Delete receipt image
+  Future<void> deleteReceiptImage(String imageUrl) async {
     try {
-      // Start Loading
-      AFullScreenLoader.openLoadingDialog(
-          'Deleteing Transaction...', AImages.docerAnimation);
-
-      // Check Internet Connectivity
-      final isConnected = await NetworkManager.instance.isConnected();
-      if (!isConnected) {
-        // Remove Loader
-        AFullScreenLoader.stopLoading();
-        return;
-      }
-      transactionRepository.removeTransaction(transactionId);
-      AFullScreenLoader.stopLoading();
-      Get.offAll(() => const HomeMenu());
+      // Delete Image
+      await transactionRepository.deleteReceiptImage(imageUrl);
     } catch (e) {
-      // Log the error or show a snackbar/message to the user
+      // Show some Generic Error to the user
+      ALoaders.errorSnackBar(title: ATexts.errorText, message: e.toString());
+    }
+  }
+
+  // Function to update a transaction.
+  Future<void> updateTransaction(TransactionModel updatedTransaction) async {
+    try {
+      // Update the transaction using the transaction ID
+      await transactionRepository.updateTransactions(
+          updatedTransaction, updatedTransaction.id!);
+    } catch (e) {
+      // Handle any errors that occur during the update process
       ALoaders.errorSnackBar(
         title: 'Error',
-        message: 'Failed to fetch transactions: ${e.toString()}',
+        message: 'Failed to update transaction: ${e.toString()}',
       );
     }
   }

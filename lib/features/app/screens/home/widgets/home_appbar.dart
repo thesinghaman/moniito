@@ -10,7 +10,8 @@ import '/common/widgets/icons/icon_button.dart';
 import '/common/widgets/appbar/appbar.dart';
 import '/common/widgets/shimmers/shimmer.dart';
 import '/features/personalization/controllers/user_controller.dart';
-import '../../transaction_add/add_transaction.dart';
+import '/features/app/screens/transaction_add/add_transaction.dart';
+import '/features/app/controllers/transaction_controller.dart';
 
 // Custom AppBar for the home screen
 class AHomeAppBar extends StatelessWidget {
@@ -21,6 +22,7 @@ class AHomeAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(UserController());
+    final transactionController = Get.put(TransactionController());
     // Return a custom AAppBar widget for the home screen
     return AAppBar(
       // Set the title of the AppBar as a Column with greeting and user's first name
@@ -54,7 +56,10 @@ class AHomeAppBar extends StatelessWidget {
       // Set the actions of the AppBar, including an add icon
       actions: [
         IconButton(
-            onPressed: () => Get.to(const AddTransactionScreen()),
+            onPressed: () {
+              transactionController.clearFormFields();
+              Get.to(() => const AddTransactionScreen());
+            },
             icon: const AIconButton(
               iconColor: AColors.primary,
               icon: Iconsax.add,

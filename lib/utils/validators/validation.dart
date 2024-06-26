@@ -143,10 +143,10 @@ class AValidator {
     }
 
     // Remove thousands separator and convert to plain number string
-    final cleanValue = value.replaceAll(RegExp(r'[^\d.]'), '');
+    final cleanValue = value.replaceAll(',', '');
 
     // Validate if the input is a valid number
-    final isValidAmount = RegExp(r'^\d*\.?\d*$').hasMatch(cleanValue);
+    final isValidAmount = RegExp(r'^\d*$').hasMatch(cleanValue);
     if (!isValidAmount) {
       return 'Enter amount correctly.';
     }

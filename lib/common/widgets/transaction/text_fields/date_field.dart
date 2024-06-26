@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '/common/widgets/transaction/text_fields/date_picker.dart';
-import '/features/app/controllers/transaction_controller.dart';
 import '/utils/validators/validation.dart';
 import '/utils/constants/colors.dart';
 import '/utils/constants/sizes.dart';
@@ -9,21 +8,21 @@ import '/utils/constants/text_strings.dart';
 import '/utils/icons/iconsax_icons.dart';
 
 class ADateField extends StatelessWidget {
-  const ADateField({super.key});
+  const ADateField({super.key, required this.controller});
+
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
-    final controller = TransactionController.instance;
-
     return Padding(
       padding: const EdgeInsets.symmetric(
           horizontal: ASizes.md, vertical: ASizes.xs - 1),
       child: TextFormField(
         readOnly: true,
         onTap: () {
-          ADatePicker.selectDate(context, controller.date);
+          ADatePicker.selectDate(context, controller);
         },
-        controller: controller.date,
+        controller: controller,
         validator: (value) => AValidator.validateDate(value),
         maxLines: 1,
         style: Theme.of(context)
