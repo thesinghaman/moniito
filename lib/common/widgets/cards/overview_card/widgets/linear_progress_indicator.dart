@@ -18,7 +18,8 @@ class ALinearProgressIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Calculating the ratio of total expense to total balance
-    double ratio = totalExpense / totalBalance;
+    double ratio = 0;
+    if (totalBalance != 0) ratio = totalExpense / totalBalance;
 
     // Function to determine the color of the progress indicator based on the ratio
     Color getProgressColor() {

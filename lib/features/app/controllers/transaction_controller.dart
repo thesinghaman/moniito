@@ -47,6 +47,7 @@ class TransactionController extends GetxController {
   RxList<TransactionModel> transactionsByDate = <TransactionModel>[].obs;
   RxList<TransactionModel> transactionsByMonth = <TransactionModel>[].obs;
   RxList<TransactionModel> transactionsByYear = <TransactionModel>[].obs;
+  Rx<String> totalExpense = ''.obs;
 
   // Form Keys
   final addTransactionFormKey = GlobalKey<FormState>();
@@ -354,6 +355,9 @@ class TransactionController extends GetxController {
         sortTransactionsByDate();
         sortTransactionsByMonth();
         sortTransactionsByYear();
+
+        // Calculate total Expense
+        calculateTotalExpense();
       });
     } catch (e) {
       // Show some Generic Error to the user
@@ -433,5 +437,22 @@ class TransactionController extends GetxController {
         message: 'Failed to update transaction: ${e.toString()}',
       );
     }
+  }
+
+  // Method to calculate the total expense
+  void calculateTotalExpense() {
+    double expenseSum = 0.0;
+    DateTime now = DateTime.now();
+    for (var transaction in transactions) {
+      if (transaction.isExpense) {
+        DateTime transactionDate =
+            DateFormat('dd MMM, yyyy').parse(transaction.date);
+        if (transactionDate.year == now.year &&
+            transactionDate.month == now.month) {
+          expenseSum += double.tryParse(transaction.amount) ?? 0.0;
+        }
+      }
+    }
+    totalExpense.value = expenseSum.toString();
   }
 }

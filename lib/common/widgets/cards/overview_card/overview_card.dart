@@ -1,5 +1,9 @@
 // Import necessary packages and files
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:moniito_v2/features/app/controllers/transaction_controller.dart';
+import 'package:moniito_v2/features/personalization/controllers/user_controller.dart';
 
 // Importing custom widgets and constants
 import 'widgets/card.dart';
@@ -18,52 +22,69 @@ class AOverviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = UserController.instance;
+    final transactionController = TransactionController.instance;
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('MMMM, yyyy').format(now);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: ASizes.md),
-      child: ACard(
-        // Custom card widget
-        startColor: AColors.secondary.withOpacity(0.5),
-        endColor: AColors.greyGradient.withOpacity(0.5),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            /// -- Available Amount Text.
-            const ACardHeader(availableBalance: ATexts.aAvailableBalance),
+      child: Obx(() {
+        double totalBalance = controller.user.value.totalBalance == ''
+            ? 0
+            : double.parse(controller.user.value.totalBalance);
+        double totalExpense = transactionController.totalExpense.value == ''
+            ? 0
+            : double.parse(transactionController.totalExpense.value);
+        final availableBalance = totalBalance - totalExpense;
+        return ACard(
+          startColor: AColors.secondary.withOpacity(0.5),
+          endColor: AColors.greyGradient.withOpacity(0.5),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Availabe Balance
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  ACardHeader(availableBalance: availableBalance),
+                  Text(
+                    formattedDate,
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  )
+                ],
+              ),
+              const SizedBox(height: ASizes.spaceBtwSections),
 
-            const SizedBox(height: ASizes.spaceBtwSections),
+              // Linear Progress Bar
+              ALinearProgressIndicator(
+                  totalExpense: totalExpense, totalBalance: totalBalance),
+              const SizedBox(height: ASizes.spaceBtwSections),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  // Total Expense
+                  CardFooter(
+                    text: ATexts.totalExpense,
+                    amount: totalExpense,
+                    icon: Iconsax.arrow_circle_up3,
+                    iconColor: AHelperFunctions.getColor('Red')!,
+                  ),
 
-            /// -- Progress Indicator.
-            const ALinearProgressIndicator(
-                totalExpense: ATexts.aTotalExpense,
-                totalBalance: ATexts.aTotalBalance),
-
-            const SizedBox(height: ASizes.spaceBtwSections),
-
-            // -- Total Balance, Balance Left.
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                // Card footer widget for total expense
-                CardFooter(
-                  text: ATexts.totalExpense,
-                  amount: ATexts.aTotalExpense,
-                  icon: Iconsax.arrow_circle_up3,
-                  iconColor: AHelperFunctions.getColor('Red')!,
-                ),
-
-                // Card footer widget for total balance
-                CardFooter(
-                  text: ATexts.totalBalance,
-                  amount: ATexts.aTotalBalance,
-                  icon: Iconsax.arrow_circle_down4,
-                  iconColor: AHelperFunctions.getColor('Green')!,
-                ),
-              ],
-            )
-          ],
-        ),
-      ),
+                  // Total Balance
+                  CardFooter(
+                    text: ATexts.totalBalance,
+                    amount: totalBalance,
+                    icon: Iconsax.arrow_circle_down4,
+                    iconColor: AHelperFunctions.getColor('Green')!,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      }),
     );
   }
 }

@@ -29,7 +29,9 @@ class UserController extends GetxController {
   final imageUploading = false.obs;
   final verifyEmail = TextEditingController();
   final verifyPassword = TextEditingController();
+  TextEditingController totalBalance = TextEditingController();
   GlobalKey<FormState> reAuthFormKey = GlobalKey<FormState>();
+  GlobalKey<FormState> editTotalBalanceKey = GlobalKey<FormState>();
 
   @override
   void onInit() {
@@ -75,7 +77,8 @@ class UserController extends GetxController {
               username: username,
               email: userCredentials.user!.email ?? ' ',
               phoneNumber: userCredentials.user!.phoneNumber ?? ' ',
-              profilePicture: userCredentials.user!.photoURL ?? '');
+              profilePicture: userCredentials.user!.photoURL ?? '',
+              totalBalance: '');
 
           // Save User Data
           await userRepository.saveUserRecord(user);
@@ -230,6 +233,32 @@ class UserController extends GetxController {
           title: 'Oh Sanp', message: 'Something went wrong : $e');
     } finally {
       imageUploading.value = false;
+    }
+  }
+
+  /// Update Total Balance
+  void updateTotalBalance() async {
+    try {
+      AFullScreenLoader.openLoadingDialog('Processing', AImages.docerAnimation);
+      if (!editTotalBalanceKey.currentState!.validate()) {
+        AFullScreenLoader.stopLoading();
+        return;
+      }
+      final amountValue =
+          totalBalance.text.toString().replaceAll(RegExp(r'[^\d.]'), '');
+      Map<String, dynamic> json = {'TotalBalance': amountValue};
+
+      await userRepository.updateSingleField(json);
+
+      // Update the user model's totalBalance field
+      user.value.totalBalance = amountValue;
+      user.refresh(); // Notify listeners
+
+      AFullScreenLoader.stopLoading();
+      Get.back();
+    } catch (e) {
+      AFullScreenLoader.stopLoading();
+      ALoaders.warningSnackBar(title: ATexts.errorText, message: e.toString());
     }
   }
 }

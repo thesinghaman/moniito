@@ -15,6 +15,7 @@ import '/utils/constants/enums.dart';
 import '/utils/constants/image_strings.dart';
 import '/features/app/controllers/transaction_controller.dart';
 import '/features/app/screens/transaction_info/transaction_info.dart';
+import '/features/personalization/overview_card/edit_overview_card.dart';
 import '/home_menu.dart';
 import 'widgets/home_appbar.dart';
 
@@ -34,9 +35,11 @@ class HomeScreen extends StatelessWidget {
             const AHomeAppBar(),
 
             /// -- Overview Card
-            const Padding(
-              padding: EdgeInsets.only(top: ASizes.md),
-              child: AOverviewCard(),
+            Padding(
+              padding: const EdgeInsets.only(top: ASizes.md),
+              child: GestureDetector(
+                  onTap: () => Get.to(() => EditOverviewCard()),
+                  child: const AOverviewCard()),
             ),
 
             const SizedBox(height: ASizes.md),

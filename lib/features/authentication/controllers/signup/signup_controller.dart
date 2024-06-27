@@ -59,14 +59,14 @@ class SignupController extends GetxController {
 
       // Save Authenticated user data in the Firebase Firestore
       final newUser = UserModel(
-        id: userCredential.user!.uid,
-        firstName: firstName.text.trim(),
-        lastName: lastName.text.trim(),
-        username: userName.text.trim(),
-        email: email.text.trim(),
-        phoneNumber: phoneNumber.text.trim(),
-        profilePicture: '',
-      );
+          id: userCredential.user!.uid,
+          firstName: firstName.text.trim(),
+          lastName: lastName.text.trim(),
+          username: userName.text.trim(),
+          email: email.text.trim(),
+          phoneNumber: phoneNumber.text.trim(),
+          profilePicture: '',
+          totalBalance: '');
 
       // Intialize the 'UserRepostiory'
       final userRepository = Get.put(UserRepository());
